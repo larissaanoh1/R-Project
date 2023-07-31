@@ -1,0 +1,249 @@
+---
+title: "Module 1"
+        "Week 1"
+output: html_notebook
+---
+
+
+```{r}
+library(FSA)
+library(FSAdata)
+library(magrittr) 
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(plotrix) 
+library(moments)
+library(readr)
+```
+
+
+```{r}
+MPhone <- read.csv("Mobile Phone.csv")
+MPhone
+```
+
+
+```{r}
+summary(MPhone)
+```
+
+
+```{r}
+tail(MPhone)
+```
+
+```{r}
+head(MPhone)
+```
+
+```{r}
+library(skimr)
+skim(MPhone)
+```
+
+
+```{r}
+MPhone <- MPhone[ -c(7) ]
+MPhone
+```
+```{r}
+MPhone1 <- na.omit(mutate_all(MPhone, ~ifelse(. %in% c("N/A", "null", ""),  NA, .)))
+MPhone1
+```
+
+```{r}
+unique(MPhone1$Mobile.Name)
+```
+
+
+```{r}
+head(MPhone1)
+```
+
+```{r}
+tail(MPhone1)
+```
+
+
+
+
+```{r}
+str(MPhone1)
+```
+
+
+
+```{r}
+MP1 <- table(MPhone1$Mobile.Name)
+```
+
+
+
+```{r}
+MP2 <- as.data.frame(MP1)
+```
+
+
+```{r}
+MP2$Freq
+```
+```{r}
+#install.packages('epiDisplay')
+library(epiDisplay)
+tab1(MP2$Freq, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+
+```{r}
+tab1(MPhone1$Stars, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+```{r}
+MPhone1$RAM.GB <- as.numeric(factor(MPhone1$RAM.GB))
+tab1(MPhone1$RAM.GB, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+```{r}
+MPhone1$ROM.GB <- as.numeric(factor(MPhone1$ROM.GB))
+tab1(MPhone1$ROM.GB, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+
+```{r}
+plot(MPhone1$Stars, MPhone1$Sales.Price, col = "blue", main = "MPhone Stars by Sales.Price")
+```
+
+
+```{r}
+plot(MPhone1$Stars, MPhone1$Reviews, col = "orange", main = "Mobile Phone review by stars")
+```
+
+```{r}
+
+plot(MPhone1$Sales.Price, MPhone1$Reviews, col = c("blue", "green"), main = "MPhone Sales.Price by review")
+```
+
+
+
+
+
+```{r}
+#install.packages("gmodels")
+library(gmodels)
+```
+
+
+```{r}
+xtabs(~ Mobile.Name + RAM.GB, data = MPhone1)
+```
+
+```{r}
+crosstabs <- xtabs(~ Mobile.Name + RAM.GB, data = MPhone1)
+crosstabs
+```
+
+
+```{r}
+prop.table(crosstabs, 1)
+```
+
+
+
+```{r}
+xtabs(~ Mobile.Name + Reviews, data = MPhone1)
+```
+
+
+```{r}
+crosstabs2 <- xtabs(~ Mobile.Name + Sales.Price, data = MPhone1)
+```
+
+
+```{r}
+prop.table(crosstabs2, 1)
+```
+
+
+
+
+```{r}
+CrossTable(MPhone1$Mobile.Name, MPhone1$Stars)
+```
+
+
+```{r}
+CrossTable(MPhone1$RAM.GB, MPhone1$Stars, prop.t = TRUE, prop.r = TRUE, prop.c = TRUE)
+```
+
+
+
+
+```{r}
+MPhone1$Mobile.Name1 <- as.numeric(factor(MPhone1$Mobile.Name))
+hist(MPhone1$Mobile.Name1, col = c("brown", "red", "yellow", "pink"))
+```
+
+
+
+
+
+```{r}
+hist(MPhone1$Reviews, col = c("gray", "black", "brown", "orange"))
+```
+
+
+
+```{r}
+MPhone1$RAM.GB <- as.numeric(factor(MPhone1$RAM.GB))
+hist(MPhone1$RAM.GB, col = c("gray", "black", "light green", "light blue"))
+```
+
+
+
+
+
+```{r}
+ggplot(data = MPhone1, aes(Mobile.Name1, Sales.Price)) + geom_boxplot(fill=c(1))
+```
+
+```{r}
+mp1 <- table(MPhone1$Mobile.Name)/1026
+```
+
+
+```{r}
+mp2 <- as.data.frame(mp1)
+mp2
+```
+
+
+
+```{r}
+barplot(mp2, ylim = c(0.0, 0.4), ylab = "Frequency %", col = "Light Blue", main = "Fish Relative Frequency", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+```
+
+
+
+
+```{r}
+barplot(table(MPhone1$Mobile.Name), table(MPhone1$ROM.GB), ylab = "MPhone1$ROM.GB", col = c("green", "Orange", "yellow"), main = "MPhone sales by ROM.GB", pch=20, las = 3 )
+```
+
+
+
+```{r}
+barplot(table(MPhone1$Mobile.Name), table(MPhone1$Stars), col = c("green", "Orange", "yellow"), main = "MPhone sales by Stars", pch=20, las = 3 )
+```
+
+
+
+```{r}
+barplot(table.to.plot, main = ifelse(main == "auto", string3, 
+main), horiz = TRUE, las = 1, xlim = c(0, max(table.to.plot) * 
+1.2), xlab = ifelse(xlab == "auto", scale.label, xlab), cex.names = cex.names, 
+col = colours, ...)
+```
+
+

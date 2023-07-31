@@ -1,0 +1,112 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(FSA)
+library(FSAdata)
+library(magrittr) 
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(plotrix) 
+library(moments)
+library(readr)
+```
+
+
+
+```{r}
+FoodSurvey  <- read.csv("Food Survey - Data.csv")
+FoodSurvey
+```
+
+
+```{r}
+library(skimr)
+skim(FoodSurvey)
+```
+
+
+```{r}
+summary(FoodSurvey)
+```
+
+
+
+
+
+```{r}
+FoodSurvey1 <- na.omit(mutate_all(FoodSurvey, ~ifelse(. %in% c("N/A", "null", ""),  NA, .)))
+FoodSurvey1
+```
+
+
+
+
+
+
+
+```{r}
+#install.packages("psych")
+library(psych)
+describe(FoodSurvey1)
+```
+
+
+
+```{r}
+barplot(table(FoodSurvey1$Gender), main = "FoodSurvey1 by Gender", xlab = "FoodSurvey1$Gender", ylab = "Frequency", col = c("green", "light green", "yellow", "orange"))
+```
+
+
+
+```{r}
+barplot(table(FoodSurvey1$Boarding), main = "FoodSurvey1 by Boarding", xlab = "FoodSurvey1$Boarding", ylab = "Frequency", col = c("green", "light green", "yellow", "orange"))
+```
+
+
+
+```{r}
+barplot(table(FoodSurvey1$Grade), main = "FoodSurvey1 by Grade", xlab = "FoodSurvey1$Grade", ylab = "Frequency", col = c("green", "light green", "yellow", "orange"))
+```
+
+```{r}
+barplot(table(FoodSurvey1$Athlete), main = "FoodSurvey1 by Athlete", xlab = "FoodSurvey1$Athlete", ylab = "Frequency", col = c("green", "light green"))
+```
+
+
+```{r}
+barplot(table(FoodSurvey1$Activities), main = "FoodSurvey1 by Activities", xlab = "FoodSurvey1$Activities", ylab = "Frequency", col = c("green", "light green", "yellow", "orange"))
+```
+
+
+
+```{r}
+barplot(table(FoodSurvey1$DHBreakfast), main = "FoodSurvey1 by DHBreakfast", xlab = "FoodSurvey1$DHBreakfast", ylab = "Frequency", col = c("green", "light green", "yellow", "orange"))
+```
+
+
+
+
+
+
+
+https://methodenlehre.github.io/SGSCLM-R-course/descriptive-statistics.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

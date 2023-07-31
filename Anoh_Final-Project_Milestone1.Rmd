@@ -1,0 +1,248 @@
+---
+title: ' Larissa Anoh Module 1 Week1: Milestone 1'
+output:
+  word_document: default
+  html_notebook: default
+---
+
+
+```{r}
+library(FSA)
+library(FSAdata)
+library(magrittr) 
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(plotrix) 
+library(moments)
+library(readr)
+```
+
+
+```{r}
+dfpbc <- read.csv("deaths-from-preterm-birth-complications.csv")
+dfpbc
+```
+
+```{r}
+library(skimr)
+skim(dfpbc)
+```
+
+
+```{r}
+new_dfpbc <- na.omit(mutate_all(dfpbc, ~ifelse(. %in% c("N/A", "null", ""),  NA, .)))
+new_dfpbc 
+```
+
+
+```{r}
+summary(new_dfpbc)
+```
+
+
+
+```{r}
+str(new_dfpbc)
+```
+
+
+```{r}
+new_dfpbc <- rename(new_dfpbc, c(Entity = "Country", Deaths...Neonatal.preterm.birth...Sex..Both...Age..Under.5..Rate. = "Deaths.Neonatal.preterm.birth"))
+new_dfpbc
+```
+
+
+```{r}
+head(new_dfpbc)
+```
+
+```{r}
+tail(new_dfpbc)
+```
+
+
+
+
+```{r}
+length(unique(new_dfpbc$Country))
+```
+
+
+
+
+```{r}
+unique(new_dfpbc$Year)
+```
+
+
+```{r}
+unique(new_dfpbc$Country)
+```
+
+
+
+```{r}
+t <- count(new_dfpbc["Country"])
+t
+```
+
+```{r}
+df_country_Afghan <- subset(new_dfpbc, Country == "Afghanistan")
+df_country_Afghan
+```
+
+
+```{r}
+df_country_China <- subset(new_dfpbc, Country == "China")
+df_country_China
+```
+
+```{r}
+df_country_USA <- subset(new_dfpbc, Country == "United States")
+df_country_USA
+```
+
+```{r}
+df_country_World <- subset(new_dfpbc, Country == "World")
+df_country_World
+```
+
+
+```{r}
+A <- ggplot(df_country_Afghan, aes(df_country_Afghan$Year, df_country_Afghan$Deaths.Neonatal.preterm.birth))
+A + geom_point(size = 4)
+```
+```{r}
+barplot(df_country_Afghan, beside = TRUE)
+```
+
+
+
+```{r}
+ggplot(df_country_Afghan, aes(x = df_country_Afghan$Year, fill = df_country_Afghan$Deaths.Neonatal.preterm.birth)) +
+  geom_bar() +
+  scale_fill_manual(values = c("darkred", "steelblue", 
+                               "darkgreen", "gold",
+                               "brown", "purple", 
+                               "grey", "khaki4"))
+```
+
+
+
+```{r}
+ggplot(df_country_Afghan, aes(x = df_country_Afghan$Year, y = df_country_Afghan$Deaths.Neonatal.preterm.birth)) + geom_line(color="darkgreen") + scale_x_date(date_breaks = "30 years", date_labels = "%y")
+```
+
+
+
+
+
+
+```{r}
+A <- ggplot(new_dfpbc, aes(new_dfpbc$Year, new_dfpbc$Deaths.Neonatal.preterm.birth))
+A + geom_point(size = 4)
+```
+
+
+
+```{r}
+new_dfpbc$Country <- as.numeric(factor(new_dfpbc$Country))
+hist(new_dfpbc$Country, col = c("dark blue", "blue", "light blue"))
+```
+
+
+
+```{r}
+hist(new_dfpbc$Year, col = c("dark green", "green", "light green"))
+```
+
+
+
+```{r}
+hist(new_dfpbc$Deaths.Neonatal.preterm.birth, col = c("green", "light green", "yellow", "orange"), main = "Deaths.Neonatal.preterm.birth")
+```
+
+
+
+```{r}
+library(epiDisplay)
+tab1(new_dfpbc$Year, sort.group = "decreasing", cum.percent = TRUE)
+```
+```{r}
+tab1(new_dfpbc$Country, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+
+```{r}
+tab1(new_dfpbc$Year, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+
+
+```{r}
+tab1(new_dfpbc$Deaths.Neonatal.preterm.birth, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+
+
+```{r}
+plot(new_dfpbc$Country, new_dfpbc$Deaths.Neonatal.preterm.birth, col = c("dark blue", "blue", "light blue"), main = "Deaths.Neonatal.preterm.birth by Country")
+
+```
+
+
+```{r}
+new_dfpbc1 <- table(new_dfpbc$Country)
+new_dfpbc1
+```
+
+
+```{r}
+barplot(new_dfpbc1, ylab = "Frequency %", col = "Light blue", main = "Age of people hospitalize", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+```
+
+
+
+
+```{r}
+plot(new_dfpbc$Deaths.Neonatal.preterm.birth, new_dfpbc$Year, col = c("green", "light green", "yellow", "orange"))
+```
+
+```{r}
+#install.packages("gmodels")
+library(gmodels)
+```
+
+
+
+```{r}
+CrossTable(new_dfpbc$Deaths.Neonatal.preterm.birth, new_dfpbc$Year)
+```
+
+
+
+
+```{r}
+mean(new_dfpbc$Deaths.Neonatal.preterm.birth)
+mean(new_dfpbc$Year)
+mean(new_dfpbc$Country)
+```
+
+
+```{r}
+sd(new_dfpbc$Deaths.Neonatal.preterm.birth)
+sd(new_dfpbc$Year)
+sd(new_dfpbc$Country)
+```
+
+
+```{r}
+median(new_dfpbc$Deaths.Neonatal.preterm.birth)
+median(new_dfpbc$Year)
+median(new_dfpbc$Country)
+```
+
+
+

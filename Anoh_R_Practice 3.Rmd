@@ -1,0 +1,160 @@
+---
+title: "Anoh_R_Practice 3"
+output:
+  word_document: default
+  pdf_document: default
+date: "2022-11-19"
+---
+
+
+
+
+
+##1- Conduct a one-sample t-tests for mean using an appropriate variable from the data set. Use the t.test( ) in R. Provide the null and the alternative hypothesis for each test. Provide the test results and several sentences interpreting the results.
+
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(plotrix) 
+library(readr)
+library(ggpubr)
+```
+
+
+
+
+```{r}
+df  <- read.csv("Food Survey - Data.csv")
+df
+```
+
+
+
+
+
+###Test 1 - One sample test for mean.
+
+
+We are using Food Survey as data set and this survey is different kind of people of athlete, non-athlete and gender. We have a total number of observations 167 observation.
+
+
+
+
+```{r}
+summary(df$Money)
+```
+
+
+
+###Below figure is a quantile-quantile plots for a visual inspection of the data normality using Q-Q plots. our Q-Q plot. We can see that the plot is normally distributed for how much money people spend on food.
+
+
+```{r}
+qqnorm(df$Money, pch = 1, frame = FALSE)
+qqline(df$Money, col = "steelblue", lwd = 2)
+
+```
+
+
+```{r}
+shapiro.test(df$Money)
+```
+
+
+
+
+
+
+```{r}
+ggboxplot(df$Money, 
+          ylab = "Money", xlab = FALSE,
+          ggtheme = theme_minimal())
+```
+
+
+
+
+###We assume people spend $10 on food so the mu = 10.
+H0: Pepole are spending $10 on food.
+H1: pepole are not spending $10 on food.
+
+In the result below displays that:
+
+
+
+The t is the t-test statistic value (t = 5.6346),
+df is the degrees of freedom df = 140,
+p-value is the significance level of the t-test p-value < 9.3e-08.
+The conf.int is the confidence interval of the mean at 95% (conf.int = [14.82009, 20.03097]);
+A sample estimate is the mean value of the sample (mean = 17.42553).
+
+
+
+Results
+- The p-value is less than 0.005 so at the 5% significance level we reject the null
+hypothesis.
+- The p-value of the test is less than 9.3e-08, which is less than the significance level alpha
+= 0.05. We can conclude that the mean of how much people spend Money in food is significantly different from
+10 with a p-value = 9.3e-08.
+
+
+```{r}
+t_test <- t.test(df$Money, mu = 10)
+t_test
+```
+
+
+
+
+###Below figure is a quantile-quantile plots for a visual inspection of the data normality using Q-Q plots and box . our Q-Q plot. We can see that the plot is normally distributed for NDHMeals.
+
+```{r}
+qqnorm(df$NDHMeals, pch = 1, frame = FALSE)
+qqline(df$NDHMeals, col = "#0099f8", lwd = 2)
+
+```
+
+
+
+
+
+
+```{r}
+ggboxplot(df$NDHMeals, 
+          ylab = "NDHMeals", xlab = FALSE,
+          ggtheme = theme_minimal())
+```
+
+
+
+###We assume people who had NDHMeals 2 on food so the mu is set to be 2.
+
+H0: Pepole are having 2 NDHMeals
+H1: pepole are not having 2 NDHMeals
+
+
+The t = 4.8558,
+df is the degrees of freedom df = 166,
+p-value is the significance level of the t-test p-value < 2.752e-06.
+With a confidence interval of the mean at 95% conf.int = 2.653808, 3.549785;
+The mean = 3.101796.
+
+
+Here since the since we can find the p value in t.test function so we made another One Sample t-test so that we could extract the p value from there we can view the output below.
+The result below shows that the p-value we got is less than 0.005 so at the 5% significance level and it is also greater than the level of significance 0.1. Thus, we concluded that null hypothesis should be rejected at α = 0.05 level of significance.
+
+
+
+
+```{r}
+result <- t.test(df$NDHMeals, mu = 2)
+result
+p_value <- result$p.value
+p_value
+```
+
+
+
+
+
