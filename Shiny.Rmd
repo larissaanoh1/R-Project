@@ -1,0 +1,72 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-03-12"
+---
+
+```{r}
+library(shiny)
+
+```
+
+
+
+```{r}
+ui <- fluidPage(
+  # Title
+  titlePanel("Job Application Form"),
+  
+  # Job Information
+  sidebarPanel(
+    selectInput("job", "Select the job you are applying for:",
+                choices = c("Data Analyst", "Data Scientist", "Web Developer", "Financial Analyst")),
+    
+    radioButtons("experience", "Do you have any experience in this field?",
+                 choices = c("Yes", "No")),
+    
+    sliderInput("salary", "Desired salary:", min = 50000, max = 150000, value = 75000, step = 1000),
+    
+    dateInput("start_date", "When can you start working?", value = Sys.Date())
+  ),
+  
+  # Personal Information
+  mainPanel(
+    textInput("name", "Full Name:"),
+    
+    numericInput("age", "Age:"),
+    
+    selectInput("province", "Province of residence:",
+                choices = c("Alberta", "British Columbia", "Manitoba", "New Brunswick", 
+                            "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Prince Edward Island", 
+                            "Quebec", "Saskatchewan")),
+    
+    checkboxInput("agree", "I certify that all information submitted in this application is true and complete.")
+  ),
+  
+  # Submit button
+  actionButton("submit", "Submit Application")
+)
+
+# Define the server
+server <- function(input, output) {
+  # Do something when the submit button is clicked
+  observeEvent(input$submit, {
+    # Print the submitted information to the console
+    cat("Job:", input$job, "\n")
+    cat("Experience:", input$experience, "\n")
+    cat("Desired salary:", input$salary, "\n")
+    cat("Start date:", input$start_date, "\n")
+    cat("Name:", input$name, "\n")
+    cat("Age:", input$age, "\n")
+    cat("Province of residence:", input$province, "\n")
+    cat("Certification:", input$agree, "\n")
+  })
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+```
+
+
+
+

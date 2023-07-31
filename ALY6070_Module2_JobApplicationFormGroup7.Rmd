@@ -1,0 +1,342 @@
+---
+title: "ALY6070_Module2_OnlineJobApplication_Group7"
+author: "Swathi, Shurui, Larissa, Nastaran"
+date: "2023-03-12"
+output: html_document
+---
+
+```{r}
+# importing library
+library(shiny) 
+library(shinythemes)
+library(shinyWidgets)
+```
+
+```{r}
+ui <- fluidPage(
+  
+
+  
+  shinythemes::themeSelector(),
+  titlePanel("Northeastern University - Job Application Form"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("photo_upload", "Choose a photo:", accept = c(".png",".jpg",".jpeg")),
+      conditionalPanel(
+        condition = "input.photo_upload",
+        tags$img(src = NA, id = "photo_preview", height = 150, width = 150)
+      ),
+      textInput("first_name", "First name:"),
+      textInput("last_name", "Last name:"),
+      textInput("linkedin_url", "Enter your LinkedIn profile URL:"),
+      uiOutput("linkedin_link"),
+      selectInput("job_apply_role", "Job Application Role", c("Software Engineer", "Data Analyst", "Marketing Manager"), selected="Data Analyst"),
+      sliderInput("experience1", "Years of experience", 0, 30, 0),
+    sliderInput("salary", "Desired salary:", min = 50000, max = 150000, value = 75000, step = 1000)),
+    
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Personal Details",
+                 verticalLayout(
+                   
+                   splitLayout(wellPanel(
+                   dateInput("dob", "Date of birth:"),
+                   textInput("email", "Email:"),
+                   textInput("phone", "Phone:"),
+                    radioButtons("gender", "Gender:", choices = c("Male", "Female", "Other"))
+                   ),
+                   
+                 
+                 wellPanel(selectInput("province", "Select a province:", 
+                  choices = c("Alberta", "British Columbia", "Manitoba", 
+                              "New Brunswick", "Newfoundland and Labrador", 
+                              "Northwest Territories", "Nova Scotia", "Nunavut", 
+                              "Ontario", "Prince Edward Island", "Quebec", 
+                              "Saskatchewan", "Yukon"), selected="British Columbia"),
+                  selectInput("city", "Select a city:", choices = c("Calgary", "Edmonton", "Red Deer", "Vancouver", "Victoria", "Kelowna", "Winnipeg", "Brandon", "Fredericton", "Moncton",
+                                                                    "Toronto", "Ottawa", "London", "Hamilton", "Kitchener", "Saint John", "Halifax", "Sydney"))
+                                
+                                ,
+                  textInput("postcode", "Postal Code:"))),
+                 wellPanel(
+                   splitLayout(checkboxGroupInput("skills", "Technical Skills:", choices = c("R", "Python", "SQL", "JavaScript")),
+                               checkboxGroupInput("other_skills", "Other Skills:", choices = c("Communication", "Interpersonal", "Leadership", "Presentation")))),
+                 sliderInput("salary", "Desired salary:", min = 50000, max = 150000, value = 75000, step = 1000))
+                 ),
+        #,
+                 #checkboxGroupInput("skills", "Technical Skills:", choices = c("R", "Python", "SQL", "JavaScript"), selected="Python"),
+                 #checkboxGroupInput("other_skills", "Other Skills:", choices = c("Communication", "Interpersonal", "Leadership", "Presentation"), selected="Leadership"),
+                 #sliderInput("salary", "Desired salary:", min = 50000, max = 150000, value = 75000, step = 1000)
+                 
+                
+                 
+                 
+                 
+        tabPanel("Education", 
+                 fluidRow(
+                  column(width=5, textInput("masters_name", "Masters Degree - Name of University/School")),
+                  column(width=3, selectInput("master_field", "Field of Study", choices=c("Engineering", "Mathematics", "Economics", "Art"), selected="Engineering")),
+                 column(width =2, dateInput("master_graduation_date", "Graduation Year", format="YYYY")),
+                 column(width=2, numericInput("master_score", "CGPA/Percentage", value=0))
+                 ),
+                 
+                 fluidRow(
+                  column(width=5, textInput("bachelor_name", "Bachelors Degree - Name of University/School")),
+                  column(width=3, selectInput("bachelor_field", "Field of Study", choices=c("Engineering", "Mathematics", "Economics", "Art"), selected="Engineering")),
+                 column(width =2, dateInput("bachelor_graduation_date", "Graduation Year", format="YYYY")),
+                 column(width=2, numericInput("bachelor_score", "CGPA/Percentage", value=0))
+                 ),
+                 
+                 fluidRow(
+                  column(width=8, textInput("school_name", "Name of High School")),
+                 column(width =2, dateInput("graduation_date", "Graduation Year", format="YYYY")),
+                 column(width=2, numericInput("school_score", "CGPA/Percentage", value=0))
+                 )
+      ),
+      tabPanel("Experience/ Internship",
+               fluidRow(
+                                sliderInput("experience", "Years of experience", 1, 30, 1)),
+               fluidRow(
+                  column(width=5, textInput("company1", "Organization Name")),
+                  column(width=3, selectInput("role1", "Designation", c("Software Engineer", "Data Analyst", "Marketing Manager"), selected="Data Analyst")),
+                 column(width =2, dateInput("start_date1", "Start Date", format="YYYY-MM")),
+                 column(width=2, dateInput("end_date1", "Start Date", format="YYYY-MM"))
+                 ),
+               fluidRow(
+                  column(width=5, textInput("company2", "Organization Name")),
+                  column(width=3, selectInput("role2", "Designation", c("Software Engineer", "Data Analyst", "Marketing Manager"), selected="Data Analyst")),
+                 column(width =2, dateInput("start_date2", "Start Date", format="YYYY-MM")),
+                 column(width=2, dateInput("end_date2", "Start Date", format="YYYY-MM"))
+                 )),
+      
+      tabPanel("Files and Confirm", 
+               verticalLayout(
+                 # Input: Select a file ----
+                             textInput("cv_manual", "Type cover letter", width="100%"),
+
+                             fileInput(inputId ="resume", "Upload Resume",
+                                       multiple = FALSE,
+                                       accept = c(".doc",".docx",".pdf")),
+                             p("Accepted Files: .doc, .docx, .pdf"),
+                             
+                             
+                 
+                             fileInput(inputId ="cv", "Upload Cover Letter",
+                                                   multiple = FALSE,
+                                                   accept = c(".doc",".docx",".pdf")),
+                             p("Accepted Files: .doc, .docx, .pdf"),
+                            checkboxInput("agree", "I certify that all information submitted in this application is true and complete."),
+                            actionButton(inputId = "submit", label = "Submit"),
+                            uiOutput("thankyou")
+                 #conditionalPanel(
+        #condition = "input.submit > 0",
+        #tags$div(
+         # h4("Thank you for submitting your application!")
+        #)
+        #)
+       )
+      )
+      
+      
+      ),
+      #h3("Review your details:"),
+      ##verbatimTextOutput("review"),
+      #br(),
+      
+    )
+  )
+  
+)
+```
+
+```{r}
+server <- function(input, output, session) {
+  
+  # Initialize a reactive value for submission status
+  submission_status <- reactiveValues(submitted = FALSE)
+  
+  # Observe submission event
+  observeEvent(input$submit, {
+    #req(input$first_name, input$last_name, input$resume, input$agree)
+    
+    # Set submission status to true
+    submission_status$submitted <- TRUE
+    
+    # Set a timeout to close the app after 5 seconds
+    setTimeout(function() {
+      session$close()
+    }, 5 )
+    
+  })
+  
+  # Render the thankyou message only when submission is made
+  output$thankyou <- renderUI({
+    if (submission_status$submitted) {
+      HTML("<p>Thank you for your submission!  We will contact you shortly.</p>")
+    }
+  })
+  
+   # observeEvent(input$province, {
+    #updateSelectInput(session, "city", 
+     #                 choices = switch(input$province,
+      #                                 "Alberta" = c("Calgary", "Edmonton", "Red Deer"),
+       #                                "British Columbia" = c("Vancouver", "Victoria", "Kelowna"),
+        #                               "Manitoba" = c("Winnipeg", "Brandon"),
+         #                              "New Brunswick" = c("Fredericton", "Moncton", "Saint John"),
+        #                               "Newfoundland and Labrador" = c("St. John's", "Corner Brook"),
+        #                               "Northwest Territories" = c("Yellowknife"),
+        #                               "Nova Scotia" = c("Halifax", "Sydney"),
+        #                               "Nunavut" = c("Iqaluit"),
+        #                               "Ontario" = c("Toronto", "Ottawa", "London", "Hamilton", "Kitchener"),
+        #                               "Prince Edward Island" = c("Charlottetown"),
+        #                               "Quebec" = c("Montreal", "Quebec City", "Gatineau"),
+        #                               "Saskatchewan" = c("Saskatoon", "Regina"),
+        #                               "Yukon" = c("Whitehorse")))
+  #})
+  
+  # Create data frame to store job applications
+  job_applications <- data.frame(
+          first_name = character(),
+          last_name= character(),
+          linkedin_url= character(),
+          job_apply_role= character(),
+          experience= character(),
+          salary= character(),
+          dob= character(),
+          email= character(),
+          phone= character(),
+          gender= character(),
+          province= character(),
+          city= character(),
+          postcode= character(),
+          skills= character(),
+          other_skills= character(),
+          masters_name= character(),
+          master_field= character(),
+          master_graduation_date= character(),
+          master_score= character(),
+          bachelor_name= character(),
+          bachelor_field= character(),
+          bachelor_graduation_date= character(),
+          bachelor_score= character(),
+          school_name= character(),
+          graduation_date= character(),
+          school_score= character(),
+          company1= character(),
+          role1= character(),
+          start_date1= character(),
+          end_date1= character(),
+          company2= character(),
+          role2= character(),
+          start_date2= character(),
+          end_date2= character(),
+          cv_manual= character(),
+          resume= character(),
+          cv= character(),
+          agree= character(),
+          submit= character()
+    
+    
+    
+    
+  )
+
+  # Update review panel with input details
+  output$review <- renderPrint({
+    paste("Job Title: ", input$job_title, "\n",
+          "First Name: ", input$first_name, "\n",
+          "Last Name: ", input$last_name, "\n",
+          "Date of Birth: ", input$dob, "\n",
+          "Gender: ", input$gender, "\n",
+          "Email": input$email, "\n",
+          "Phone": input$phone, "\n",
+          "Address": input$address, "\n",
+          "Years of experience:": input$years_of_experience, "\n",
+          "Skills": input$skills, "\n",
+          "Resume": input$resumse, "\n",
+          "Province": input$province, "\n",
+          "Expected Salary": input$salary, "\n")
+  })
+  
+  output$linkedin_link <- renderUI({
+    if (!is.null(input$linkedin_url)) {
+      a(href = input$linkedin_url, "Click here to view my LinkedIn profile")
+    }
+  })
+  
+  observeEvent(input$photo_upload, {
+    file <- input$photo_upload
+    if (!is.null(file)) {
+      output$photo_preview <- renderUI({
+        tags$img(src = URL.createObjectURL(file$datapath), height = 300, width = 300)
+      })
+    }
+  })
+  
+  # Handle photo submission
+  observeEvent(input$submit, {
+    file <- input$photo_upload
+    if (!is.null(file)) {
+      # Do something with the uploaded photo, such as save it to a file or database
+      # Here we'll just print a message to the console
+      print(paste("Photo uploaded:", file$name))
+    }
+  })
+  
+  # Store input details in data frame when submit button is clicked
+  observeEvent(input$submit, {
+    job_applications <- rbind(job_applications, data.frame(
+      first_name = input$first_name,
+      last_name= input$last_name,
+      linkedin_url= input$linkedin_url,
+      job_apply_role= input$job_apply_role,
+      experience= input$experience,
+      salary= input$salary,
+      dob= input$dob,
+      email= input$email,
+      phone= input$phone,
+      gender= input$gender,
+      province= input$province,
+      city= input$city,
+      postcode= input$postcode,
+      skills= input$skills,
+      other_skills= input$other_skills,
+      masters_name= input$masters_name,
+      master_field= input$master_field,
+      master_graduation_date= input$master_graduation_date,
+      master_score= input$master_score,
+      bachelor_name= input$bachelor_name,
+      bachelor_field= input$bachelor_field,
+      bachelor_graduation_date= input$bachelor_graduation_date,
+      bachelor_score= input$bachelor_score,
+      school_name= input$school_name,
+      graduation_date= input$graduation_date,
+      school_score= input$school_score,
+      company1= input$company1,
+      role1= input$role1,
+      start_date1= input$start_date1,
+      end_date1= input$end_date1,
+      company2= input$company2,
+      role2= input$role2,
+      start_date2= input$start_date2,
+      end_date2= input$end_date2,
+      cv_manual= input$cv_manual,
+      resume= input$resume,
+      cv= input$cv,
+      agree=input$agree
+    ))
+  })
+  
+}
+```
+
+```{r}
+shinyApp(ui = ui, server = server)
+```
+```{r}
+job_applications
+```
+
+
+
+

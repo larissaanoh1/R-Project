@@ -1,0 +1,418 @@
+---
+title: "ALY6070_Module2_RF_Lasso"
+author: "Swathi Raikwar"
+date: "2023-03-12"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(measures)
+library(dplyr)
+library(tidyr)
+library(Hmisc)
+library(pROC)
+library(magrittr)
+library(randomForest)
+library(mclust)
+library(glmnet)
+library(caret)
+```
+
+
+```{r}
+# Reading the main dataset 
+climate_change_data <- read.csv("/cloud/project/ClimateChange_Project/API_19_DS2_en_csv_v2_4902199.csv", skip=4)
+head(climate_change_data)
+```
+
+```{r}
+# let us read the metadata for country
+country_metadata <- read.csv("/cloud/project/ClimateChange_Project/Metadata_Country_API_19_DS2_en_csv_v2_4902199.csv")
+head(country_metadata)
+```
+
+```{r}
+# let us read the indicator
+indicator_metadata <- read.csv("/cloud/project/ClimateChange_Project/Metadata_Indicator_API_19_DS2_en_csv_v2_4902199.csv")
+head(indicator_metadata)
+```
+
+```{r}
+df1 = merge(x=climate_change_data,y=indicator_metadata, 
+      by.x=c("Indicator.Code"), 
+      by.y=c("INDICATOR_CODE"))
+
+df2 = merge(x=df1,y=country_metadata, 
+      by.x=c("Country.Code"), 
+      by.y=c("Country.Code"))
+
+```
+
+
+```{r}
+df <- tibble(df2)
+df %>% summarise_all(~ sum(is.na(.)))
+```
+
+```{r}
+df3 = climate_change_data
+df4 = df3[,c(-1,-2,-3)]
+df5 = t(df4[,-1])
+#colnames(df5) <- df4[1]
+head(data.frame(df5))
+
+
+```
+
+
+```{r}
+df5 = t(df4[,-1])
+df5 = data.frame(df5)
+ncol(df5)
+ncol(df5)
+```
+
+```{r}
+#replace the NA with column's median 
+
+
+df6 <- mutate_all(df5, ~ifelse(is.na(.), median(., na.rm = TRUE), .))
+
+```
+
+```{r}
+new_column_names = paste(climate_change_data$Indicator.Code, climate_change_data$Country.Code, sep=".")
+
+length(new_column_names)
+```
+
+```{r}
+ncol(df6)
+
+colnames(df6) = new_column_names
+```
+```{r}
+# Identify columns containing all NAs
+all_na_cols <- which(colSums(is.na(df6)) == nrow(df6))
+
+# Remove identified columns and placing in new dataframe
+df7 <- df6[, -all_na_cols]
+```
+
+```{r}
+# Check for columns with missing values
+missing_cols <- colSums(is.na(df7)) > 0
+
+# Subset the data frame to exclude columns with missing values
+df_no_missing <- df7[, !missing_cols]
+
+df8 <- df_no_missing
+```
+
+```{r}
+# Strip "X" prefix from all values in the list and get index i.e years as a column
+df8$year = gsub("^X", "", rownames(df8))
+```
+
+```{r}
+
+# strings which matches country canada
+canada_series = grep(".CAN", colnames(df8), value = TRUE)
+canada_df = df8[c(canada_series)]
+
+# strings which matches country US
+us_series = grep(".USA", colnames(df8), value = TRUE)
+us_df = df8[c(us_series)]
+
+# strings which matches country World
+world_series = grep(".WLD", colnames(df8), value = TRUE)
+world_df = df8[c(world_series)]
+
+
+#describe(canada_df)
+```
+
+```{r}
+# strings which matches country canada, us, world
+data_series = grep(".CAN", colnames(df8), value = TRUE)
+data = df8[c(data_series)]
+
+
+
+
+
+n <-nrow(data)
+
+set.seed(1397)
+sample1 <- sample(n,0.7*n, replace=TRUE)
+train1 <- data[sample1,]
+test1 <-data[-sample1,]
+train1_x <- train1[,-42]
+train1_y <- train1[,42]
+
+test1_x <- test1[,-42]
+test1_y <- test1[,42]
+
+
+
+```
+
+```{r}
+# EN.ATM.CO2E.KT.CAN
+
+
+model1 <-randomForest(EN.ATM.CO2E.KT.CAN ~., data=train1,ntree=500,ntry=6,importance=TRUE,replace=FALSE)
+varImpPlot(model1,col=6)
+```
+
+From the importance plot above we can see there are only 6 features giving % increase more than 50%. Let us choose only those features and see if the model performance stays good.
+
+```{r}
+train1_y_predicted = predict(model1, train1_x)
+test1_y_predicted = predict(model1, test1_x)
+
+
+```
+
+```{r}
+model_evaluator = data.frame( "Model#"=c(),"Model_Name" = c(), "rmse_train" = c(), "rmse_test" = c(), "rsquared_train"= c(), "rsquared_test"= c())
+```
+
+```{r}
+# function to calculate rsquared error
+rsq_error <- function(pred, true) {
+  1 - sum((true - pred)^2) / sum((true - mean(true))^2)
+}
+```
+
+
+```{r}
+library(Metrics)
+
+rmse_train = median(model1$mse ** (1/2) )
+rsq_train = median(model1$rsq )
+
+train1_y_predicted = predict(model1, train1_x)
+test1_y_predicted = predict(model1, test1_x)
+rmse_train = rmse(train1_y, train1_y_predicted)
+rmse_tesr = rmse(test1_y, test1_y_predicted)
+rsq_train = rsq_error(train1_y, train1_y_predicted)
+rsq_test = rsq_error(test1_y, test1_y_predicted)
+
+
+model_performance = data.frame("Model#" = "1",
+                               "Model_Name" = "Random Forest all features",
+                               "rmse_train" = rmse_train, "rmse_test" = rmse_train,
+                               "rsquared"= rsq_train, "rsquared_test" = rsq_test)
+model_evaluator = rbind(model_evaluator, model_performance)
+
+
+model_performance
+```
+
+```{r}
+feat_imp = model1$importance
+feat_imp
+```
+
+
+
+```{r}
+library(measures)
+feat_imp_ordered = feat_imp[order(-feat_imp[,"%IncMSE"]),]
+
+# selecting feautes where IncMSE is more than 5
+feat_incmse_morethan5 = feat_imp_ordered[feat_imp_ordered[,"%IncMSE"] > 5,]
+feat_incmse_morethan5_series = rownames(feat_incmse_morethan5)
+```
+
+# Let us create a new RF model using features with incMSE more than 5
+
+```{r}
+target = "EN.ATM.CO2E.KT.CAN"
+features = paste(feat_incmse_morethan5_series, collapse="+")
+formula = paste(target,"~", features)
+formula = eval(parse(text = formula))
+model2 <-randomForest(formula, data=train1,ntree=500,ntry=6,importance=TRUE,replace=FALSE)
+varImpPlot(model2,col=6)
+
+
+```
+```{r}
+
+
+train1_y_predicted = predict(model2, train1_x)
+test1_y_predicted = predict(model2, test1_x)
+rmse_train = rmse(train1_y, train1_y_predicted)
+rmse_tesr = rmse(test1_y, test1_y_predicted)
+rsq_train = rsq_error(train1_y, train1_y_predicted)
+rsq_test = rsq_error(test1_y, test1_y_predicted)
+
+
+model_performance = data.frame("Model#" = "2",
+                               "Model_Name" = "Random Forest with features IncMSE >5",
+                               "rmse_train" = rmse_train, "rmse_test" = rmse_train,
+                               "rsquared"= rsq_train, "rsquared_test" = rsq_test)
+model_evaluator = rbind(model_evaluator, model_performance)
+
+
+model_performance
+```
+```{r}
+model_evaluator
+```
+```{r}
+
+feat_imp_ordered = feat_imp[order(-feat_imp[,"%IncMSE"]),]
+
+# selecting features where incMSE is more than 7
+feat_incmse_morethan7 = feat_imp_ordered[feat_imp_ordered[,"%IncMSE"] > 7,]
+feat_incmse_morethan7_series = rownames(feat_incmse_morethan7)
+```
+
+# Let us create a new RF model using features with incMSE more than 5
+
+```{r}
+target = "EN.ATM.CO2E.KT.CAN"
+features = paste(feat_incmse_morethan7_series, collapse="+")
+formula = paste(target,"~", features)
+formula = eval(parse(text = formula))
+model3 <-randomForest(formula, data=train1,ntree=500,ntry=6,importance=TRUE,replace=FALSE)
+varImpPlot(model3,col=6)
+
+
+```
+
+```{r}
+train1_y_predicted = predict(model3, train1_x)
+test1_y_predicted = predict(model3, test1_x)
+rmse_train = rmse(train1_y, train1_y_predicted)
+rmse_tesr = rmse(test1_y, test1_y_predicted)
+rsq_train = rsq_error(train1_y, train1_y_predicted)
+rsq_test = rsq_error(test1_y, test1_y_predicted)
+
+
+model_performance = data.frame("Model#" = "3",
+                               "Model_Name" = "Random Forest with features IncMSE >7",
+                               "rmse_train" = rmse_train, "rmse_test" = rmse_train,
+                               "rsquared"= rsq_train, "rsquared_test" = rsq_test)
+model_evaluator = rbind(model_evaluator, model_performance)
+
+
+
+model_performance
+```
+
+
+# Lasso Regression model
+
+```{r}
+
+
+
+# Set up a grid of lambda values to try
+lambda_grid <- 10^seq(10, -2, length.out = 100)
+
+# Fit a Lasso regression model with cross-validation
+#lasso_model <- glmnet(x = as.matrix(train1_x), y = train1_y, alpha = 1, lambda = lambda_grid)
+
+#Least Absolute Shrinkage and Selection Model
+Lasso1 <- cv.glmnet(as.matrix(train1_x), train1_y, nfolds=10)
+lambda_opt <- Lasso1$lambda.1se
+plot(Lasso1)
+print(log(Lasso1$lambda.min))
+print(log(Lasso1$lambda.1se))
+
+```
+```{r}
+#alpha=1: Lasso
+#alpha=0: Ridge
+model1.min <- glmnet(train1_x,train1_y,alpha=1,lambda=Lasso1$lambda.min)
+model1.min
+coef(model1.min)
+model4 <- glmnet(train1_x,train1_y,alpha=1,lambda=Lasso1$lambda.1se)
+model4
+coef(model4)
+```
+
+
+
+
+```{r}
+
+train1_y_predicted = predict(model4, newx=as.matrix(train1_x))
+test1_y_predicted = predict(model4, newx=as.matrix(test1_x))
+rmse_train = rmse(train1_y, train1_y_predicted)
+rmse_tesr = rmse(test1_y, test1_y_predicted)
+rsq_train = rsq_error(train1_y, train1_y_predicted)
+rsq_test = rsq_error(test1_y, test1_y_predicted)
+
+
+model_performance = data.frame("Model#" = "4",
+                               "Model_Name" = "Lasso Regression all features",
+                               "rmse_train" = rmse_train, "rmse_test" = rmse_train,
+                               "rsquared"= rsq_train, "rsquared_test" = rsq_test)
+model_evaluator = rbind(model_evaluator, model_performance)
+
+
+
+
+
+model_performance
+
+```
+```{r}
+rownames(coef(model4))
+coef(model4)[,1]
+
+```
+
+
+
+
+```{r}
+feat_imp = coef(model4)[-1,1]
+barplot(feat_imp[order(-feat_imp)][c(1:10)], main="Feature importance coefficients", las=2, col="skyblue")
+```
+
+
+```{r}
+feat_imp_lasso = coef(model4, s = lambda_opt)
+feat_imp_lasso_ordered = feat_imp_lasso[order(-feat_imp_lasso[,"s1"]),]
+
+# getting features which have coefficient more than 0, to get important features
+imp_features = rownames(data.frame(feat_imp_lasso[feat_imp_lasso[,"s1"]>0,]))
+data.frame(feat_imp_lasso[feat_imp_lasso[,"s1"]>0,])
+```
+
+
+```{r}
+model5 = glmnet(train1_x[,imp_features],train1_y,alpha=1,lambda=Lasso1$lambda.1se)
+
+
+train1_y_predicted = predict(model5, newx=as.matrix(train1_x[,imp_features]))
+test1_y_predicted = predict(model5, newx=as.matrix(test1_x[,imp_features]))
+rmse_train = rmse(train1_y, train1_y_predicted)
+rmse_tesr = rmse(test1_y, test1_y_predicted)
+rsq_train = rsq_error(train1_y, train1_y_predicted)
+rsq_test = rsq_error(test1_y, test1_y_predicted)
+
+
+model_performance = data.frame("Model#" = "5",
+                               "Model_Name" = "Lasso Regression with features with coefficient > 0",
+                               "rmse_train" = rmse_train, "rmse_test" = rmse_train,
+                               "rsquared"= rsq_train, "rsquared_test" = rsq_test)
+model_evaluator = rbind(model_evaluator, model_performance)
+
+
+
+
+
+model_performance
+```
+
+```{r}
+model_evaluator
+```
+
