@@ -1,0 +1,575 @@
+---
+title: "Larissa Anoh Final Project 10/29/2022"
+output:
+  pdf_document: default
+  html_notebook: default
+  word_document: default
+---
+
+#Part 1
+
+
+
+#Load some r function in the library
+
+```{r}
+library(FSA)
+library(FSAdata)
+library(magrittr) 
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(plotrix) 
+library(moments)
+```
+
+#Import the asthma dataset with csv
+Here I imported the data in the 
+
+```{r}
+asthma <- read.csv("asthma-hospitalization-rates-by-county-2015_2019.csv")
+#asthma
+```
+#Use skim function
+I used skim function here to find there is any missing data or empty.
+There is a about 1103 missing data in AGE.ADJUSTED.HOSPITALIZATION.RATE	and empty cells in NUMBER.OF.HOSPITALIZATIONS (1038) and comments(2555).
+
+```{r}
+library(skimr)
+skim(asthma)
+```
+#Show the summary of asthma.
+We can find below the summary of asthma
+
+```{r}
+summary(asthma)
+```
+#Display the head of asthma dataset before cleaning
+Here the head of asthma data set in strata is total population.
+
+```{r}
+head(asthma)
+```
+
+#Display the tail of asthma dataset before cleaning
+
+Here the tail of asthma data set in strata is Race/ethnicity.
+
+```{r}
+tail(asthma)
+```
+
+#Display the structure of asthma before cleaning
+
+The structure of the dataset shows 3658 observations with 8 variables.
+
+```{r}
+str(asthma)
+```
+
+#Get a glimpse of asthma data
+We have more details about the data.
+
+```{r}
+
+glimpse(asthma)
+```
+
+#Display levels (names) of the STRATA.NAME variable
+
+
+```{r}
+unique(asthma$STRATA.NAME)
+```
+
+#Display levels (names) of the AGE.GROUP variable
+```{r}
+unique(asthma$AGE.GROUP)
+```
+# clean the dataset because we want to remove the missing data.
+
+```{r}
+asthma %>% select(COUNTY, YEAR, STRATA, STRATA.NAME, AGE.GROUP, NUMBER.OF.HOSPITALIZATIONS, AGE.ADJUSTED.HOSPITALIZATION.RATE, COMMENT) %>% filter(complete.cases(.)) -> asthma1
+```
+
+#we want to see how many data we have now. After cleaning we have 2555 data remain that we are going to use to move forward.
+
+```{r}
+view(asthma1)
+```
+
+
+#Show the summary of asthma aftern cleaning
+We can find below the summary of asthma
+```{r}
+summary(asthma1)
+```
+
+#Display levels (names) of the AGE.GROUP variable before rewrite the name properly
+
+```{r}
+unique(asthma1$AGE.GROUP)
+```
+
+#Rewrite some Age.Group names
+
+```{r}
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "0\x9617 years"] <- "0-17 years"
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "0\x964 years"] <- "0-64 years"
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "5\x9617 years"] <- "5-17 years"
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "18\x9664 years"] <- "18-64 years"
+```
+
+#Rewrite some STRATA.NAME names
+```{r}
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "0\x9617 years"] <- "0-17 years"
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "0\x964 years"] <- "0-64 years"
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "5\x9617 years"] <- "5-17 years"
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "18\x9664 years"] <- "18-64 years"
+```
+
+
+#Display to see if the names has been rewrite properly.
+
+```{r}
+unique(asthma1$AGE.GROUP)
+```
+
+#create a table that contains frequency to extract the frequency later in the project.
+
+```{r}
+asthma1part1 <- table(asthma1$AGE.GROUP)
+asthma1part1
+```
+
+# Here we are going Convert asthma1part1 to a data frame named New and display the results below
+the result is displayed as a frequency
+
+```{r}
+NewAge <- as.data.frame(asthma1part1)
+NewAge
+```
+
+# We extracted and display the frequency values from the NewAge data frame
+```{r}
+NewAge$Freq
+```
+
+#rearrange data frame in descending order of frequency. Save the rearranged data frame as the object a
+
+```{r}
+a <- arrange(NewAge, desc(Freq))
+names(a) <- c("AGE.GROUP", "Freq")
+a
+```
+
+#Adding new variables to NewAge name percent
+
+
+```{r}
+NewAge <- mutate(a, Freq = Freq, percent = (Freq/2555), percentage = (Freq/2555)*100)
+NewAge
+```
+
+
+
+
+#Building barplot for Age of people hospitalize
+```{r}
+barplot(asthma1part1, ylab = "Freq", col = "Light blue", main = "Age of people hospitalize", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+
+```
+
+
+
+
+#convert NUMBER.OF.HOSPITALIZATIONS to numeric variable
+
+
+```{r}
+asthma1$NUMBER.OF.HOSPITALIZATIONS <- as.numeric(factor(asthma1$NUMBER.OF.HOSPITALIZATIONS))
+```
+
+
+#Building histogram for Number of people being hospitalize
+
+```{r}
+hist(asthma1$NUMBER.OF.HOSPITALIZATIONS, col = c("green", "yellow"))
+```
+
+
+#Building histogram for asthma patient per year
+
+```{r}
+hist(asthma1$YEAR, col = c("blue", "purple", "orange"))
+```
+
+
+#Building plot for AGE.ADJUSTED.HOSPITALIZATION.RATE people who has asthma every year since 2015 until 2019
+
+```{r}
+plot(asthma1$YEAR, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = c("blue", "purple", "yellow"))
+```
+
+
+##Building plot for NUMBER.OF.HOSPITALIZATIONS Vs AGE.ADJUSTED.HOSPITALIZATION.RATE people who has asthma by county
+
+```{r}
+plot(asthma1$NUMBER.OF.HOSPITALIZATIONS, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma1$COUNTY), main = "Age and Num of people Hosp by County", pch=20)
+```
+
+#Building histogram for asthma patient by STRATA.NAME
+
+```{r}
+asthma1$STRATA.NAME <- as.numeric(factor(asthma1$STRATA.NAME))
+hist(asthma1$STRATA.NAME, col = c("brown", "blue", "yellow", "pink"))
+```
+
+#Building plot for asthma patient with STRATA.NAME by AGE.ADJUSTED.HOSPITALIZATION.RATE
+
+```{r}
+plot(asthma1$STRATA.NAME, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma1$COUNTY),  pch=20, main = "Asthma patients hospitalized by COUNTY")
+```
+
+
+
+
+```{r}
+Child_vs_adult_asthma1 <- asthma1 %>%
+  filter(STRATA == "Child vs. adult")
+#Child_vs_adult_asthma1
+```
+
+```{r}
+Total_population_asthma1 <- asthma1 %>%
+  filter(STRATA == "Total population")
+Total_population_asthma1
+```
+
+
+```{r}
+Race_ethnicity_asthma1 <- asthma1 %>%
+  filter(STRATA == "Race/ethnicity")
+#Race_ethnicity_asthma1
+```
+
+```{r}
+Child_vs_adult_asthma1county <- Child_vs_adult_asthma1 %>% group_by(COUNTY) 
+#Child_vs_adult_asthma1county
+```
+
+
+
+
+#scatterplot for NUMB.OF.HOSPIT vs AGE.ADJ.HOSPIT.RATE
+
+```{r}
+plot(asthma1$NUMBER.OF.HOSPITALIZATIONS, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma1$AGE.GROUP), main = "NUMB.OF.HOSPIT vs AGE.ADJ.HOSPIT.RATE", pch=20)
+legend("topright", legend = c("Group1: All ages", "Group2: 0-17 years ", "Group3: 18+ years", "Group4: 0-64 years", "Group5: 5-17 years", "Group6: 18-64 years", "Group7: 65+ years"), col = factor(levels(factor(asthma1$AGE.GROUP))), pch = 16)
+```
+
+
+
+
+```{r}
+asthma_hosp_age <- asthma1 %>% ggplot(aes(x = asthma1$AGE.GROUP)) + geom_bar(fill = "Light Blue") + coord_flip() +  ggtitle("Asthma hosp by age ")
+
+asthma_hosp_age
+```
+
+```{r}
+boxplot(asthma1$YEAR, asthma1$NUMBER.OF.HOSPITALIZATIONS, main = "Boxplot: Year Vs NUMBER.OF.HOSPITALIZATIONS", col = c("blue", "green"))
+```
+
+
+
+# Part I discussion
+My dataset is about people who have been hospitalized because they have "asthma". This dataset is among Californians statewide and by county in the United States. The data contains 3658 records and  8 attributes, and it is unclean. The dataset attributes are COUNTY, YEAR, STRATA, STRATA NAME, AGE GROUP, NUMBER OF HOSPITALIZATIONS, AGE-ADJUSTED HOSPITALIZATION RATE and COMMENT. The data are stratified by age group (all ages, 0-17, 18+, 0-4, 5-17, 18-64, 65+) and race/ethnicity (white, black, Hispanic, Asian/Pacific Islander, American Indian/Alaskan Native). There were a lot of missing data. After cleaning the data only 2555 records remain with 8 variables. The out of range in my data were from "NUMBER OF HOSPITALIZATIONS" and "AGE-ADJUSTED HOSPITALIZATION RATE" variables. Those variable has a lot of missing data. I was able to delect those missing that. Age group was out of range I had 0\x9617 years", "0\x964 years", "5\x9617 years", "18\x9664 years" for the some of the age so rearrange by rewrite the ages.  In my dataset I notice there were some information that did not figure on it such "how much people were charged for been hospitalize" and the "gender" of those people who were hospitalized. 
+
+
+
+#Part II
+
+#created new variable called sex with female and male vectors
+
+```{r}
+asthma$sex <-  c("male", "female")
+sex <- c(rep("male",1277), rep("female",1278))
+asthma2 <- mutate(asthma1, sex = c(rep("male",1277), rep("female",1278)))
+#asthma2
+```
+
+#displayed data inform
+
+```{r}
+summary(asthma2)
+```
+#show all male sex in df
+
+```{r}
+dfma = filter(asthma2, sex == "male")
+dfma
+```
+
+#Find the average age of dfma
+```{r}
+mean(dfma$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+```
+
+#show all female sex in df
+
+```{r}
+dffe = filter(asthma2, sex == "female")
+#dffe
+```
+#Find the average age of dfa
+```{r}
+mean(dffe$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+
+```
+
+#
+```{r}
+num_of_HOSPIT = levels(factor(asthma2$NUMBER.OF.HOSPITALIZATIONS))
+
+```
+
+
+#added new variable call charge since there is no charge for being hospitalize in the dataset
+```{r}
+charges <- c(rep("$5,000",1200), rep("$10,000",800), rep("$15,000",555))
+asthma3 <- mutate(asthma2, charges = c(rep("$5,000",1200), rep("$10,000",800), rep("$15,000",555)))
+#asthma3
+```
+#convert charges to numeric since it is a character
+
+```{r}
+asthma3$charges <- as.numeric(factor(asthma3$charges))
+#asthma3
+```
+
+#Finding average charges of asthma3
+
+```{r}
+mean(asthma3$charges)
+```
+```{r}
+sd(dfma$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+sd(dffe$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+sd(asthma3$charges)
+```
+
+#median for the variables
+
+```{r}
+median(dfma$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+median(dffe$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+median(asthma3$charges)
+```
+
+
+
+
+#Building asthma_hosp_charges
+
+```{r}
+library(ggplot2)
+asthma_hosp_charges <- asthma3 %>% ggplot(aes(x = asthma3$charges)) + geom_bar(fill = "Light Blue") + coord_flip() +  ggtitle("people Asthma hosp ")
+
+asthma_hosp_charges
+```
+
+#boxplot for charges Vs AGE.ADJUSTED.HOSPITALIZATION.RATE
+```{r}
+boxplot(charges~COUNTY, data = asthma3, xlab = "charges", ylab = "AGE.ADJUSTED.HOSPITALIZATION.RATE", main = "Boxplot: charges Vs AGE.ADJUSTED.HOSPITALIZATION.RATE", col = c("blue", "yellow"))
+
+```
+#boxplot of sex Vs AGE.ADJUSTED.HOSPITALIZATION.RATE
+```{r}
+asthma3$sex <- as.numeric(factor(asthma3$sex))
+boxplot(sex~AGE.GROUP, data = asthma3, xlab = "AGE.GROUP", ylab = "SEX", main = "Boxplot: sex Vs AGE.ADJUSTED.HOSPITALIZATION.RATE", col = c("blue", "yellow"))
+```
+
+
+
+#boxplot for charge Vs NUMBER.OF.HOSPITALIZATIONS
+
+```{r}
+boxplot(asthma3$charges, asthma3$NUMBER.OF.HOSPITALIZATIONS, main = "Boxplot: charge Vs NUMBER.OF.HOSPITALIZATIONS", col = c("blue", "yellow"))
+
+```
+#convert charges to numeric since it is a character
+
+```{r}
+hist(asthma3$sex)
+```
+```{r}
+plot(asthma3$sex, asthma3$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma3$NUMBER.OF.HOSPITALIZATIONS), main = "sex vs AGE.ADJUSTED.HOSPITALIZATION.RATE", pch=20)
+```
+
+
+
+Part II discussion
+
+This part I was able to add 2 variables with and attribute them with values that I use to compute mean, standard deviation, plot, chart and more plot. There is a slightly reaction between sex and the other variable but there there is more reaction for charges variable.
+
+
+#References
+
+Martin, G (2021, December 15). Clean your data with R. R Programming for beginners. YouTube. Retrieved October 29, 2022, from https://www.youtube.com/watch?v=sV5lwAJ7vnQ 
+
+
+
+Martin, G. (2018, September 18). How to clean a dataset in R. YouTube. Retrieved October 29, 2022, from https://www.youtube.com/watch?v=gFALxkGfPQQ 
+
+
+ DataDaft. (2019, May 21). How to add columns to a data frame in R. YouTube. Retrieved October 29, 2022, from https://www.youtube.com/watch?v=l-YXcD3Xzxo 
+ 
+Webster, R. (2015, April 21). Selecting and removing rows in R dataframes. YouTube. Retrieved October 29, 2022, from https://www.youtube.com/watch?v=KXSPxjjS8Fc 
+
+
+ Ellis, S. E., &amp; Wright, C. (2021, September 2). Tidyverse Skills for Data Science. Chapter 3 Wrangling Data in the Tidyverse. Retrieved October 29, 2022, from https://jhudatascience.org/tidyversecourse/wrangle-data.html 
+ 
+ 
+ AnalyticoHub. (2019, July 13). Learning R: 21 how to replace single and multiple values in R. YouTube. Retrieved October 29, 2022, from https://www.youtube.com/watch?v=Cmd8cJCk2lA 
+ 
+
+Data, E. (2020, May 15). Examining data with glimpse(): R-bloggers. R-bloggers. Retrieved October 29, 2022, from https://www.r-bloggers.com/2020/05/examining-data-with-glimpse/ 
+
+
+
+
+#Appendix
+
+library(FSA)
+library(FSAdata)
+library(magrittr) 
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(plotrix) 
+library(moments)
+
+asthma <- read.csv("asthma-hospitalization-rates-by-county-2015_2019.csv")
+asthma
+
+library(skimr)
+skim(asthma)
+
+summary(asthma)
+
+head(asthma)
+tail(asthma)
+str(asthma)
+glimpse(asthma)
+unique(asthma$STRATA.NAME)
+unique(asthma$AGE.GROUP)
+
+asthma %>% select(COUNTY, YEAR, STRATA, STRATA.NAME, AGE.GROUP, NUMBER.OF.HOSPITALIZATIONS, AGE.ADJUSTED.HOSPITALIZATION.RATE, COMMENT) %>% filter(complete.cases(.)) -> asthma1
+
+view(asthma1)
+
+summary(asthma1)
+unique(asthma1$AGE.GROUP)
+
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "0\x9617 years"] <- "0-17 years"
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "0\x964 years"] <- "0-64 years"
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "5\x9617 years"] <- "5-17 years"
+asthma1$AGE.GROUP[asthma1$AGE.GROUP == "18\x9664 years"] <- "18-64 years"
+
+
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "0\x9617 years"] <- "0-17 years"
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "0\x964 years"] <- "0-64 years"
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "5\x9617 years"] <- "5-17 years"
+asthma1$STRATA.NAME[asthma1$STRATA.NAME == "18\x9664 years"] <- "18-64 years"
+
+unique(asthma1$AGE.GROUP)
+
+asthma1part1 <- table(asthma1$AGE.GROUP)
+asthma1part1
+
+NewAge <- as.data.frame(asthma1part1)
+NewAge
+
+NewAge$Freq
+a <- arrange(NewAge, desc(Freq))
+names(a) <- c("AGE.GROUP", "Freq")
+a
+NewAge <- mutate(a, Freq = Freq, percent = (Freq/2555), percentage = (Freq/2555)*100)
+NewAge
+barplot(asthma1part1, ylab = "Freq", col = "Light blue", main = "Age of people hospitalize", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+
+asthma1$NUMBER.OF.HOSPITALIZATIONS <- as.numeric(factor(asthma1$NUMBER.OF.HOSPITALIZATIONS))
+
+hist(asthma1$NUMBER.OF.HOSPITALIZATIONS, col = c("green", "yellow"))
+
+hist(asthma1$YEAR, col = c("blue", "purple", "orange"))
+
+plot(asthma1$YEAR, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = c("blue", "purple", "yellow"))
+
+plot(asthma1$NUMBER.OF.HOSPITALIZATIONS, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma1$COUNTY), main = "Age and Num of people Hosp by County", pch=20)
+
+asthma1$STRATA.NAME <- as.numeric(factor(asthma1$STRATA.NAME))
+hist(asthma1$STRATA.NAME, col = c("brown", "blue", "yellow", "pink"))
+
+plot(asthma1$STRATA.NAME, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma1$COUNTY),  pch=20, main = "Asthma patients hospitalized by year")
+
+Child_vs_adult_asthma1 <- asthma1 %>%
+  filter(STRATA == "Child vs. adult")
+Child_vs_adult_asthma1
+Total_population_asthma1 <- asthma1 %>%
+  filter(STRATA == "Total population")
+Total_population_asthma1
+
+Race_ethnicity_asthma1 <- asthma1 %>%
+  filter(STRATA == "Race/ethnicity")
+Race_ethnicity_asthma1
+
+plot(asthma1$NUMBER.OF.HOSPITALIZATIONS, asthma1$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma1$AGE.GROUP), main = "NUMB.OF.HOSPIT vs AGE.ADJ.HOSPIT.RATE", pch=20)
+legend("topright", legend = c("Group1: All ages", "Group2: 0-17 years ", "Group3: 18+ years", "Group4: 0-64 years", "Group5: 5-17 years", "Group6: 18-64 years", "Group7: 65+ years"), col = factor(levels(factor(asthma1$AGE.GROUP))), pch = 16)
+
+asthma_hosp_age <- asthma1 %>% ggplot(aes(x = asthma1$AGE.GROUP)) + geom_bar(fill = "Light Blue") + coord_flip() +  ggtitle("Asthma hosp by age ")
+asthma_hosp_age
+
+boxplot(asthma1$YEAR, asthma1$NUMBER.OF.HOSPITALIZATIONS, main = "Boxplot: Year Vs NUMBER.OF.HOSPITALIZATIONS", col = c("blue", "green"))
+
+asthma$sex <-  c("male", "female")
+sex <- c(rep("male",1277), rep("female",1278))
+asthma2 <- mutate(asthma1, sex = c(rep("male",1277), rep("female",1278)))
+asthma2
+summary(asthma2)
+dfma = filter(asthma2, sex == "male")
+dfma
+mean(dfma$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+dffe = filter(asthma2, sex == "female")
+dffe
+mean(dffe$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+num_of_HOSPIT = levels(factor(asthma2$NUMBER.OF.HOSPITALIZATIONS))
+charges <- c(rep("$5,000",1200), rep("$10,000",800), rep("$15,000",555))
+asthma3 <- mutate(asthma2, charges = c(rep("$5,000",1200), rep("$10,000",800), rep("$15,000",555)))
+asthma3
+asthma3$charges <- as.numeric(factor(asthma3$charges))
+asthma3
+mean(asthma3$charges)
+sd(dfma$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+sd(dffe$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+sd(asthma3$charges)
+library(ggplot2)
+asthma_hosp_charges <- asthma3 %>% ggplot(aes(x = asthma3$charges)) + geom_bar(fill = "Light Blue") + coord_flip() +  ggtitle("people Asthma hosp ")
+
+asthma_hosp_charges
+boxplot(charges~COUNTY, data = asthma3, xlab = "charges", ylab = "AGE.ADJUSTED.HOSPITALIZATION.RATE", main = "Boxplot: charges Vs AGE.ADJUSTED.HOSPITALIZATION.RATE", col = c("blue", "yellow"))
+asthma3$sex <- as.numeric(factor(asthma3$sex))
+boxplot(sex~AGE.GROUP, data = asthma3, xlab = "AGE.GROUP", ylab = "SEX", main = "Boxplot: sex Vs AGE.ADJUSTED.HOSPITALIZATION.RATE", col = c("blue", "yellow"))
+
+boxplot(asthma3$charges, asthma3$NUMBER.OF.HOSPITALIZATIONS, main = "Boxplot: charge Vs NUMBER.OF.HOSPITALIZATIONS", col = c("blue", "yellow"))
+
+hist(asthma3$sex)
+
+plot(asthma3$sex, asthma3$AGE.ADJUSTED.HOSPITALIZATION.RATE, col = factor(asthma3$NUMBER.OF.HOSPITALIZATIONS), main = "sex vs AGE.ADJUSTED.HOSPITALIZATION.RATE", pch=20)
+
+median(dfma$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+median(dffe$AGE.ADJUSTED.HOSPITALIZATION.RATE)
+median(asthma3$charges)

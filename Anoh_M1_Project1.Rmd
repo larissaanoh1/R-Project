@@ -1,0 +1,137 @@
+---
+title: "Larissa Anoh 9/28/2022 Project1"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+#2. Install the vcd package (pg 19)
+
+I took this package installation from the book of R in Action Data Analysis and Graphics with R 2nd edition by Robert Kabacoff.
+
+```{r}
+#install.packages("vcd")
+```
+
+#3. Import the vcd library (pg 19)
+
+This is to visualize the data we have on the library. I got it from the book.
+
+```{r}
+library(vcd)
+```
+
+#4. Plot a sales ~ temp scatter plot using the data below (pg 9):
+
+This is a scatter plot that shows a relationship between sales and temperature.We can see the image below our codes.
+
+```{r}
+Sales <- c(8,11,15,20,21,11,18,10,6,22)
+Temperature <-c(69,80,77,84,80,77,87,70,65,90)
+ plot(Sales,Temperature)
+```
+
+
+#5. Find the mean temperature (pg 9)
+
+This is the mean temperature and I took the formula from the book. And the value is 77.9. To get this value we have to compute the mean formula and specify what kind of mean we want. We can see the result below our code.
+
+```{r}
+mean(Temperature)
+```
+
+#6. Delete the 3rd element from the sales vector
+
+This is to remove an element from a sales vector to do that we need specify in which vector we want and what element we want to take it out. I took this formula from a youtube tutorial you can see the link and citation below.
+
+```{r}
+Sales <- Sales[-3]
+```
+
+
+#7. Insert 16 as the 3rd element into the sales vector
+
+Here we want to add the 16 value to the 3rd element so we do that by using the append formula. I found that formula on a website called Spark By example. Citation below.
+
+```{r}
+Sales <- append(Sales,16,2)
+```
+
+#8. Create a vector <names> with elements Tom, Dick, Harry (pg 22)
+
+I created this element by using the name vector and this is to include names vector section in our R script.
+```{r}
+names <- c("Tom", "Dick", 'Harry')
+```
+
+#9. Create a 5 row and 2 column matrix of 10 integers (pg 23)
+
+This is to include matrix in the script by using the matrix function and name it y vector.
+
+```{r}
+y <- matrix(1:10, nrow=5, ncol=2)
+```
+
+
+#10. Create a data frame <icSales> with sales and temp attributes (pg 26)
+
+This is to create a data frame of sales and temperature in the script and name it icSales. We can see the result displayed below our code.
+
+```{r}
+icSales <- data.frame (Sales,Temperature)
+icSales
+```
+
+
+#11. Display the data frame structure of icScales (pgs 28-31)
+
+This to structure the data frame and display it. This shows the number of observation and variables. We can see the result below our code.
+
+```{r}
+str(icSales)
+```
+
+
+#12. Display a summary of the icScales data frame (pgs 28-31)
+
+This shows the summary of icSales. The summary contains the min, 1st quat, median, mean, 3rd quat and max for the sales and temperature. We can see the result below our code.
+
+```{r}
+summary(icSales)
+```
+
+
+#13. Import the dataset Student.csv (pgs 34-37)
+
+For this one I have to install.packages("readr") before importing the student file on this file. After install the package I computed the read.csv code to read the student file since this file came in csv form. We can see the result below.
+
+```{r}
+#install.packages("readr")
+library(readr)
+```
+
+```{r}
+student = read.csv("student.csv")
+student
+```
+
+
+#14. Display only the variable names of the Student.csv dataset
+
+This display the different kinds of names in the dataset as we can see below.
+
+```{r}
+names(student)
+```
+
+
+#Summary
+
+This project helped me understand and learn some part of R programming. When I was working on this project I faced some difficulty that made me slow down for a few hour such as install package, find how to delete and install. But unless that I found it quite interesting and full of new information. I can't wait to see what the next project will be.
+
+
+Mr Math Expert. (n.d.). YouTube. Retrieved from https://www.youtube.com/watch?v=rgAvJmvfA2c 
+
+NNk. (2022, July 31). Add or append element to vector in R? Spark by {Examples}. Retrieved September 27, 2022, from https://sparkbyexamples.com/r-programming/add-element-to-vector-in-r/ 
+
+Kabacoff, R. (2015). R in Action Data Analysis and Graphics with R 2nd edition (2nd ed., Ser. ISBN 9781617291388). Manning. 

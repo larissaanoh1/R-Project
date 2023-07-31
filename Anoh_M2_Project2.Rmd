@@ -1,0 +1,323 @@
+---
+title: "Lariss Anoh  09/29/2022  Project 2 Plotting Basics"
+output:
+  word_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+#2. Import libraries including: plyr, FSA, FSAdata, magrittr, dplyr, plotrix, ggplot2, and moments
+
+
+
+
+```{r}
+#install.packages("plyr")
+#install.packages("FSA")
+#install.packages("FSAdata")
+#install.packages("magrittr")
+#install.packages("dplyr")
+#install.packages("plotrix")
+#install.packages("ggplot2")
+#install.packages("moments")
+```
+
+
+
+
+#3. Load the BullTroutRML2 dataset
+
+This part is to import BullTroutRML2 dataset into r by using the read.csv function. This data set contain 96 observations with 4 columns. We will keep our observation in this data until further notice.
+
+```{r} 
+BullTroutRML2 = read.csv("BullTroutRML2.csv")
+BullTroutRML2
+```
+
+
+#4. Print the first and last 3 records from the dataset
+
+Here we have the first and last 3 records from the dataset that we can see below. I found this code on the book we are using. The result shows that Osprey is the first and last 3 records from the dataset.
+
+```{r}
+head(BullTroutRML2, n = 3)
+tail(BullTroutRML2, n = 3)
+```
+
+#5. Filter out all records except those from Harrison Lake
+
+To come up with the result of this part I found the code on the website called "Enterprise DNA". Before find in the result we have to bring dplyr into the library. We filtered the BullTroutRML2 by keeping the Harrison Lake.
+
+
+```{r}
+library(dplyr)
+BullTroutRML3 = filter(BullTroutRML2,lake =="Harrison")
+```
+
+#6. Display the first and last 3 records from the filtered dataset
+
+Here we have the first and last 3 records from the dataset we filtered. This time the Harrison is the first and last 3 records from the dataset.
+
+```{r}
+head(BullTroutRML3, n = 3)
+tail(BullTroutRML3, n = 3)
+```
+
+#7. Display the structure of the filtered dataset
+
+This new dataset that has been filter contain 61 observations now but still have 4 columns. We will keep our observation in this data until further notice.
+
+```{r}
+str(BullTroutRML3)
+```
+
+
+#8. Display the summary of the filtered dataset and save it as <t>
+
+The filtered dataset (BullTroutRML3) shows the details for each of the vectors. Since two of them have integer values that why they have min, quartiles, mean, median and max. But of two of them have character values that is displayed below.
+
+```{r}
+summary(BullTroutRML3)
+t <- summary(BullTroutRML3)
+```
+
+
+#9. Create a scatterplot for “age” (y variable) and “fl” (x variable) with the following
+
+I was able to come up with this code by using R-bloggers website. This scatter plot is way to visualize the relationship between age and fl based the BullTroutRML3 dataset. As the age increase the fork length (fl) increase that means they have a good correlation.
+
+
+```{r}
+plot(x=BullTroutRML3$fl, y=BullTroutRML3$age, xlab = "Fork Length (mm)", ylab = "Age (yrs)", xlim = c(0,500), ylim = c(0,15), main = "Title of graph is “Plot 1: Harrison Lake Trout", pch = 16)
+```
+
+
+#10. Plot an “Age” histogram with the following specifications
+
+I was able to come up with this code by using some where I understood this function. We can see the histogram displays the distributions of the data. This histogram has a left-skewed distributions. We can notice that longer tail extends to the left.
+
+```{r}
+hist(BullTroutRML3$age , main = "Title of graph is “Plot 2: Harrison Fish Age Distribution", xlab = "Age (yrs)", ylab = "Frequency", col = "cadetblue", col.main = "cadetblue")
+```
+
+
+
+#11. Create an overdense plot using the same specifications as the previous scatterplot. But, include two levels of shading for the “black” data points. Title the plot “Plot 3: Harrison Density Shaded by Era”
+
+
+I was able to come up with this code by using the rstudio formula sheet and R-bloggers website . This scatter plot displays the relationship between age and fl based the BullTroutRML3 dataset with the reaction of era. We can see the reaction with the different shady color. As the age increase the fork length (fl) increase that means they have a good correlation.
+
+
+
+```{r}
+plot(BullTroutRML3$fl, BullTroutRML3$age, xlab = "Fork Length (mm)", ylab = "Age (yrs)", xlim = c(0,500), ylim = c(0,15), pch = 16, col= c("black", "brown"), main = "Plot 3: Harrison Density Shaded by Era")
+```
+
+
+#12. Create a new object called “tmp” that includes the first 3 and last 3 records of the whole data set.
+
+Here I tried to create new object called tmp by including the the first 3 and last 3 records of the whole data set. I used rbind to combine the new records I created.
+
+```{r}
+tmp1 <- head(BullTroutRML2, n = 3)
+tmp2 <- tail(BullTroutRML2, n = 3)
+tmp <- rbind(tmp1, tmp2)
+tmp
+```
+
+
+#13. Display the “era” column in the new “tmp” object
+
+Since our vector era and data.frame tmp are different one is an object and the other is a character we have to use drop = FALSE with tmp to pull out the era column.
+
+```{r}
+tmp[,c("era"), drop = FALSE]
+```
+
+
+
+#14. Create a pchs vector with the argument values for + and x. Then create a cols vector with the two elements “red” and “gray60”
+
+I was able to create values and elements for pchs and cols vectors. That went quite well.
+
+
+```{r}
+pchs <- c("+", "X")
+cols <- c("red", "gray60")
+pchs
+cols
+```
+
+
+
+#15. Convert the tmp object values to numeric values. Then create a numeric numEra object from the tmp$era object
+
+Here we would like to convert tmp and era from object and character to numeric. Normally we have to convert it to character then convert to numeric but since that not working for this data so I decided to combine what I found statics globe and what the professor said by adding  factor instead of character because we want to keep the values. If we try by converting the tmp$era factor variable to character first and then it converts the character to numeric we are going to loose the era values.
+
+
+```{r}
+numEra = as.numeric(factor(tmp$era))
+```
+
+
+#16. Associate the cols vector with the tmp era values
+
+Here it is to associate the tmp$era value with the cols vectors I created before.
+
+```{r}
+cols <- tmp$era
+cols
+```
+
+
+#17. Create a plot of “Age (yrs)” (y variable) versus “Fork Length (mm)” (x variable) with the following specifications:
+
+To do this one I followed the one I did before but this time i research on how to set pch equal to pch and cols = cols value so I discover a couple interesting code that we see the result below with the Symbol & Color by Era. From the result of this code we can observe that there is a good relationship between Fork Length and age when every years from 1977-80.
+
+
+```{r}
+plot(x = BullTroutRML3$fl, y = BullTroutRML3$age, xlab = "Age (yrs)", ylab = "Fork Length (mm)", xlim = c(0,500), ylim = c(0,15), pch = ifelse(tmp$era == "1977-80", pchs[1], pchs[2]), cols = ifelse(tmp$era == "1977-80", cols[1], cols[2]), main = "Plot 4: Symbol & Color by Era")
+```
+
+
+#18. Plot a regression line of the previous plot with a dashed line with width 2 and color “cadetblue”
+
+Here I was able to change the color and put a straight line since we are talking about regression here by using abline(lm()) function. We can see the straight line when we execute the code and also the interaction between Age and Fork Length. We can talk about linear regression because their interaction is straight.
+
+
+```{r}
+plot(x = BullTroutRML3$fl, y = BullTroutRML3$age, xlab = "Age (yrs)", ylab = "Fork Length (mm)", xlim = c(0,500), ylim = c(0,15), pch=ifelse(tmp$era == "1977-80", pchs[1], pchs[2]), cols =ifelse(tmp$era == "1977-80", cols[1], cols[2]), main = "Plot 5: Regression", col = "cadetblue", abline(lm(BullTroutRML3$age~BullTroutRML3$fl, data = BullTroutRML3)))
+```
+
+
+#19. Place a legend of levels by era with pchs symbols in the top left of the plot with the following specifications:
+
+This is the same as question one but with Inset of 0.05, No box around the legend  bty = "n" and Font size: 75% of nominal with cex. There is also good correlation here between Fork Length and Age.
+
+
+```{r}
+plot(x = BullTroutRML3$fl, y = BullTroutRML3$age, xlab = "Age (yrs)", ylab = "Fork Length (mm)", xlim = c(0,500), ylim = c(0,15), pch=ifelse(tmp$era == "1977-80", pchs[1], pchs[2]), cols=ifelse(tmp$era == "1977-80", cols[1], cols[2]), main = "plot 6: A Legend of levels by era", abline(lm(BullTroutRML3$age~BullTroutRML3$fl, data = BullTroutRML3)), inset = 0.05, cex = 0.75, bty = "n")
+```
+
+
+
+#Summary
+
+This project has not been easy as the first one but I was able to create code for all of them but I learned a lot. I learned how to print the first and last 3 records of the dataset, filter out the data except the one that I was going to use to continue the project by using the filter function. I learned how to create and modify the scatter plot, histogram and add a regression line to make the scatter plot more presentable. I also learned how to convert an object values to a numeric values by using the as.numeric and the factor function.
+
+
+
+
+
+
+
+#Reference
+
+ Tech, W. C. (2021, July 5). How to make histogram in R? | R data visualization | R programming tutorial for beginners #32. YouTube. Retrieved October 5, 2022, from https://www.youtube.com/watch?v=UJ3jMh7tS3Y 
+
+Filtering data. (n.d.). Retrieved October 5, 2022, from https://cran.r-project.org/web/packages/crunch/vignettes/filters.html 
+
+
+Schork , J. (2019, March 16). Convert data frame column to numeric in R (2 example codes). Statistics Globe. Retrieved October 5, 2022, from https://statisticsglobe.com/convert-data-frame-column-to-numeric-in-r 
+
+YouTube. (2021). How to Filter Data in R. YouTube. Retrieved October 5, 2022, from https://www.youtube.com/watch?v=sDoGnfL0vzg. 
+
+
+Lathiya, K., Krunal LathiyaKrunal Lathiya is an Information Technology Engineer by education and web developer by profession. He has worked with many back-end platforms, Rookstool, A., &amp; Jul. (2021, February 25). bty in R: Control box type in R Plotting. R-Lang. Retrieved October 5, 2022, from https://r-lang.com/bty-in-r-control-box-type-in-r-plotting/ 
+
+
+Mount, G. (2022, April 25). Arrange, filter, &amp; group rows in R using dplyr. Enterprise DNA. Retrieved October 5, 2022, from https://blog.enterprisedna.co/arrange-filter-group-rows-in-r-using-dplyr/ 
+
+
+
+Finnstats. (2021, June 13). R Plot pch Symbols: Different point shapes in R. R-BLOGGERS. Retrieved October 5, 2022, from https://www.r-bloggers.com/2021/06/r-plot-pch-symbols-different-point-shapes-in-r/ 
+
+
+
+Hathaway, N. (2016, April 26). Additional Plotting Aspects. Additional plotting aspects. Retrieved October 5, 2022, from https://bootstrappers.umassmed.edu/bootstrappers-courses/pastCourses/rCourse_2016-04/Additional_Resources/Some_more_plotting_aspects.html 
+
+
+
+Cols: Create column specification. RDocumentation. (n.d.). Retrieved October 5, 2022, from https://www.rdocumentation.org/packages/readr/versions/2.1.2/topics/cols 
+
+
+Li, D. (2020, October 23). Basic R guide for NSC Statistics. Chapter 19 Scatterplots and Best Fit Lines - Two Sets. Retrieved October 5, 2022, from https://bookdown.org/dli/rguide/scatterplots-and-best-fit-lines-two-sets.html 
+
+
+mnel . (2013, April 22). R draw (abline + LM) line-of-best-fit through Arbitrary Point. Stack Overflow. Retrieved October 5, 2022, from https://stackoverflow.com/questions/16140582/r-draw-abline-lm-line-of-best-fit-through-arbitrary-point 
+
+jmount. (2018, February 27). R tip: Use drop = false with data.frames. Win Vector LLC. Retrieved October 5, 2022, from https://win-vector.com/2018/02/27/r-tip-use-drop-false-with-data-frames/ 
+
+
+Kabacoff, R. (2015). R in Action Data Analysis and Graphics with R 2nd edition (2nd ed., Ser. ISBN 9781617291388). Manning.
+
+
+
+
+
+
+
+#Appendix
+
+#install.packages("plyr")
+#install.packages("FSA")
+#install.packages("FSAdata")
+#install.packages("magrittr")
+#install.packages("dplyr")
+#install.packages("plotrix")
+#install.packages("ggplot2")
+#install.packages("moments")
+
+BullTroutRML2 = read.csv("BullTroutRML2.csv")
+BullTroutRML2
+
+
+head(BullTroutRML2, n = 3)
+tail(BullTroutRML2, n = 3)
+
+library(dplyr)
+BullTroutRML3 = filter(BullTroutRML2,lake =="Harrison")
+
+head(BullTroutRML3, n = 3)
+tail(BullTroutRML3, n = 3)
+
+str(BullTroutRML3)
+
+summary(BullTroutRML3)
+t <- summary(BullTroutRML3)
+
+plot(x=BullTroutRML3$fl, y=BullTroutRML3$age, xlab = "Fork Length (mm)", ylab = "Age (yrs)", xlim = c(0,500), ylim = c(0,15), main = "Title of graph is “Plot 1: Harrison Lake Trout", pch = 16)
+
+
+hist(BullTroutRML3$age , main = "Title of graph is “Plot 2: Harrison Fish Age Distribution", xlab = "Age (yrs)", ylab = "Frequency", col = "cadetblue", col.main = "cadetblue")
+
+plot(BullTroutRML3$fl, BullTroutRML3$age, xlab = "Fork Length (mm)", ylab = "Age (yrs)", xlim = c(0,500), ylim = c(0,15), pch = 16, col= c("black", "brown"), main = "Plot 3: Harrison Density Shaded by Era")
+
+tmp1 <- head(BullTroutRML2, n = 3)
+tmp2 <- tail(BullTroutRML2, n = 3)
+tmp <- rbind(tmp1, tmp2)
+tmp
+
+tmp[,c("era"), drop = FALSE]
+
+pchs <- c("+", "X")
+cols <- c("red", "gray60")
+pchs
+cols
+
+numEra = as.numeric(factor(tmp$era))
+
+cols <- tmp$era
+cols
+
+
+plot(x = BullTroutRML3$fl, y = BullTroutRML3$age, xlab = "Age (yrs)", ylab = "Fork Length (mm)", xlim = c(0,500), ylim = c(0,15), pch = ifelse(tmp$era == "1977-80", pchs[1], pchs[2]), cols = ifelse(tmp$era == "1977-80", cols[1], cols[2]), main = "Plot 4: Symbol & Color by Era")
+
+
+plot(x = BullTroutRML3$fl, y = BullTroutRML3$age, xlab = "Age (yrs)", ylab = "Fork Length (mm)", xlim = c(0,500), ylim = c(0,15), pch=ifelse(tmp$era == "1977-80", pchs[1], pchs[2]), cols =ifelse(tmp$era == "1977-80", cols[1], cols[2]), main = "Plot 5: Regression", col = "cadetblue", abline(lm(BullTroutRML3$age~BullTroutRML3$fl, data = BullTroutRML3)))
+
+
+plot(x = BullTroutRML3$fl, y = BullTroutRML3$age, xlab = "Age (yrs)", ylab = "Fork Length (mm)", xlim = c(0,500), ylim = c(0,15), pch=ifelse(tmp$era == "1977-80", pchs[1], pchs[2]), cols=ifelse(tmp$era == "1977-80", cols[1], cols[2]), main = "plot 6: A Legend of levels by era", abline(lm(BullTroutRML3$age~BullTroutRML3$fl, data = BullTroutRML3)), inset = 0.05, cex = 0.75, bty = "n")
+

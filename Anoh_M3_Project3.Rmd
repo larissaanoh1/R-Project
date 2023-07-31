@@ -1,0 +1,438 @@
+---
+title: 'Larissa Anoh   10/08/2022  Project3 '
+output:
+  word_document: default
+  html_notebook: default
+---
+
+#1. Print your name at the top of the script and load these libraries: FSA, FSAdata, magrittr, dplyr, tidyr plyr and tidyverse
+
+
+```{r}
+#install.packages("FSA")
+#install.packages("FSAdata")
+#install.packages("magrittr")
+#install.packages("dplyr")
+#install.packages("tidyr")
+#install.packages("plyr")
+#install.packages("tidyverse")
+#install.packages("plotrix")
+#install.packages("moments")
+#install.packages("ggplot2")
+library(FSA)
+library(FSAdata)
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(plotrix)
+library(moments)
+library(ggplot2)
+```
+
+#2. Import the inchBio.csv and name the table <bio>
+
+The dataset is inchBio and it's about fish species. This data set contains 8 different kind of fish species such as Bluegill, Black Crappie, Bluntnose Minnow, Iowa Darter, Largemouth Bass,  Pumpkinseed, Tadpole Madtom, Yellow Perch. InchBio has 676 observations in total. 
+
+```{r}
+bio <- read.csv("inchBio.csv")
+bio
+```
+
+#3. Display the head, tail and structure of <bio>
+
+According to the result I got below the head for the dataset is 
+Bluegrill and the tail is Black Crappie. The structure of the dataset shows 676 observations with 7 variables.
+
+```{r}
+head(bio)
+```
+
+```{r}
+tail(bio)
+```
+```{r}
+str(bio)
+```
+
+#4. Create an object, <counts>, that counts and lists all the species records
+
+The question is to create an object counts that counts and lists all the species records. To do that we have to combine bio and species.
+
+```{r}
+counts <- c(bio$species)
+```
+
+
+
+#5. Display just the 8 levels (names) of the species
+
+This is to show the different kind of species the dataset has. I brought out the species by using the unique function because this function identify and eliminate the duplicates.
+
+```{r}
+unique(bio$species)
+```
+
+
+#6. Create a <tmp> object that displays the different species and the number of record ofeach species in the dataset. Include this information in your report.-
+
+This part is to create a tmp object that displays the different species and the number of record of each species in the dataset. So, the table() function help to create quickly different species and the number of record we want to have. We can see the result displays below.
+
+```{r}
+tmp <- table(bio$species)
+tmp
+```
+
+
+#7. Create a subset, <tmp2>, of just the species variable and display the first five records
+
+This question is about creating a subset called tmp2 with the species variable. So, for that I used the subset() function to answer this question because it will help me to select the species is the bio dataset. I also diplayed the first five records of tmp2 and according to the result "Bluegill" is the headfirst five record.
+
+```{r}
+tmp2 <- subset(bio, select = species)
+head(tmp2, 5)
+```
+
+#8. Create a table, <w>, of the species variable. Display the class of w
+
+This part is to create a table for w object of the species variable from the bio dataset. So, the table() function help to create quickly different species table for the w object.
+
+```{r}
+w <- table(bio$species)
+w
+class(w)
+```
+
+#9. Convert <w> to a data frame named <t> and display the results
+
+This part is to convert w object to a data frame name t. So, the best function for that as.data.frame() function because that function can convert any different kind of object.
+
+```{r}
+t <- as.data.frame(w)
+t
+```
+
+#10. Extract and display the frequency values from the <t> data frame
+
+Since all we want in this question is to extract a single column (Freq) from t data frame the only thing I think we can do is to add the dollar sign between t and Freq. After that we run it and the result we come out. 
+
+```{r}
+t$Freq
+```
+
+
+#11. Create a table named <cSpec> from the bio species attribute (variable) and confirm that
+you created a table which displays the number of species in the dataset <bio>
+
+That's the same procedure as question 6 and 8 but different table name.
+
+```{r}
+cSpec <- table(bio$species)
+cSpec
+```
+
+
+#12. Create a table named <cSpecPct> that displays the species and percentage of records for
+each species. Confirm you created a table class.
+
+Here we want to find create a new table named cSpecPct that has the the percentage of each species records. So I followed the same process to create the table but since we want the result has a percentage I thought is preferable to divide it by the total number of observations which is 676 because I most of time when want a percentage of something we just divide by the total that give automatically the answer.
+
+```{r}
+cSpecPct <- table(bio$species)/676
+cSpecPct
+```
+
+
+#13. Convert the table, <cSpecPct>, to a data frame named <u> and confirm that <u> is a data
+frame
+
+That the same step as question 9 but different data frame name and different table name. Here we have u as data frame and cSpecPct the table.
+
+
+```{r}
+u <- as.data.frame(cSpecPct)
+u
+```
+
+
+
+#14. Create a barplot of <cSpec> with the following: titled Fish Count with the following
+specifications:
+
+The barplot below shows the Fish Count of each fish available in the bio. The y axis shows the counts for fish available. The x axis shows the different names of fish species available in the dataset. We can observe on graph that Bluegill and Largemouth Bass are the highest that means these species have large in number of fish in the dataset.
+
+
+
+```{r}
+barplot(cSpec, ylab = "COUNTS", col = "Light Green", main = "Fish Count", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+```
+
+
+#15. Create a barplot of <cSpecPct>, with the following specifications:
+
+This another barplot we plotted with cSpecPct as x. Here we still have the same elements except the counts. This time we want to use the frequency. The y axis shows the Frequency in percentage for fish available. We can observe on graph that Bluegill and Largemouth Bass have the highest frequency again.
+
+
+```{r}
+barplot(cSpecPct, ylim = c(0.0, 0.4), ylab = "Frequency %", col = "Light Blue", main = "Fish Relative Frequency", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+```
+
+
+
+
+#16. Rearrange the <u> cSpec Pct data frame in descending order of relative frequency. Save
+the rearranged data frame as the object <d>
+
+To rearrange the data frame, I use best function arrange() with u data frame and include desc() function with Fred because we want to have a descending order  of relative frequency.
+
+
+```{r}
+d <- arrange(u, desc(Freq))
+d
+```
+
+
+
+#17. Rename the <d> columns Var 1 to Species, and Freq to RelFreq
+
+Here we want to rename the d column with different objects such as Species, and Freq to RelFreq. So, the best way is to use name() function with different objects includes.
+
+```{r}
+names(d) <- c("Species", "RelFreq")
+d
+```
+
+
+#18. Add new variables to <d> and call them cumfreq, counts, and cumcounts
+
+
+
+```{r}
+d <- mutate(d, cumfreq = cumsum(RelFreq), counts = RelFreq*676, cumcounts = cumsum(counts))
+d
+```
+
+#19. Create a parameter variable <def_par> to store parameter variables
+
+I created a parameter variable with random values I chose because I want to adjusts plotting parameters. I used the par() function and I include mar() function to give a margin size.
+
+
+```{r}
+def_par <- par(mar=c(5, 3, 2, 5))
+def_par
+```
+
+
+#20. Create a barplot, <pc>, with the following specifications:
+
+The barplot below shows the Species Pareto of each fish available in the bio. The y axis shows the Cummulative Counts for fish available. The x axis shows the d$counts available in the dataset. We can observe the graph is from the higher to the lower Cummulative Counts that because the dataset has been rearrage in descending order. Here the Largemouth Bass has the highest Cummulative Counts follow by Bluegill.
+
+```{r}
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+```
+
+
+#21. Add a cumulative counts line to the <pc> plot with the following:
+
+Since we already built our barplot we're just going to add cumulative counts line to the plot. We're just going to add the lines() function below the pc plot. The result is shown below the line on top of our barplot.
+
+```{r}
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+lines(pc , d$cumcounts, type = "b", cex = 0.7, pch = 19, col = "cyan4")
+```
+
+
+
+
+
+#22. Place a grey box around the pareto plot (hint: 
+
+This time we want to add a grey box around the pareto plot. For this we're just going to add the box() function below the plot so that the plot can have the box around.
+
+
+```{r}
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+box(col = "grey62")
+```
+
+#23. Add a left side axis with the following specifications
+
+Here we want to add a left side axis with some specification to the pareto plot. For this we're just going to add axis() function to the left side with the information we are supposed to include below the plot.
+
+
+```{r}
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+axis(side = 2, at = c(0, d$cumcounts), tick = TRUE, col.ticks = "grey62", col.axis = "grey62", cex.axis = 0.8, las = 2)
+```
+
+#24. Add axis details on right side of box with the specifications:
+
+This part is to add axis details on right side of box with the specifications. So, So we going to use the axis() again but this time to the right side.
+
+
+```{r}
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+axis(side = 4, at = c(0, d$cumcounts), labels = paste0(round( c(0,d$cumfreq),digits = 0), "%"), col = "cyan4", cex.axis = 0.8, las = 2, tick = TRUE, col.axis = "cyan4")
+```
+
+#25. Display the finished Species Pareto Plot (without the star watermarks). Have your last name on the plot
+
+Last but not least, we're going to regroup the barplot and everything we added.
+
+
+```{r}
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto by ANOH", las = 2)
+lines(pc , d$cumcounts, type = "b", cex = 0.7, pch = 19, col = "cyan4")
+box(col = "grey62")
+axis(side = 2, at = c(0, d$cumcounts), tick = TRUE, col.ticks = "grey62", col.axis = "grey62", cex.axis = 0.8, las = 2)
+axis(side = 4, at = c(0, d$cumcounts), labels = paste0(round( c(0,d$cumfreq),digits = 0), "%"), col = "cyan4", cex.axis = 0.8, las = 2, tick = TRUE, col.axis = "cyan4")
+```
+
+
+
+
+
+
+#Summary
+
+This data brought out a lot of functions that was new for me. From this data, I have created frequency, percentage, the cumfreq, counts, and cumcounts for each species. I was able to some function such as Create a subset, Display the 8 levels with the unique function, rearrange the data frame in descending order with the arrange(, desc()) function. I was able a to create a barplot end with all the result that was giving to me. The result of that barplot shows the Largemouth Bass	is the highest followed by	Bluegill because they have the highest number that exceeded the other species number.
+
+
+
+
+
+
+
+
+
+
+#References
+
+par(mar, mgp, las). R function of the day. (2012, February 8). Retrieved October 12, 2022, from http://rfunction.com/archives/1302 
+
+Yau, C. (2020, March 23). Cumulative frequency distribution. R Tutorial An R Introduction to Statistic. Retrieved October 12, 2022, from http://www.r-tutor.com/elementary-statistics/quantitative-data/cumulative-frequency-distribution from the eBook R Tutorial With Bayesian Statistics Using Stan by Chi Yau
+
+
+Schork, J. (2021, October 11). Reduce space around plot in R (example) | area margins of a grid layout | par, mar, mfrow, Plot &amp; C. YouTube. Retrieved October 12, 2022, from https://www.youtube.com/watch?v=zDYKouyZq5c
+
+CN, P. (2022, August 3). The unique() function in R programming. DigitalOcean. Retrieved October 12, 2022, from https://www.digitalocean.com/community/tutorials/unique-function-r-programming 
+
+Zach. (2021, June 7). How to use the table function in R (with examples). Statology. Retrieved October 12, 2022, from https://www.statology.org/table-function-in-r/ 
+
+Team, D. C. (2020, June 26). R subsetting tutorial: How to subset &amp; select dataframe rows &amp; columns in R. DataCamp. Retrieved October 12, 2022, from https://www.datacamp.com/tutorial/subsets-in-r 
+
+Subsetting in R Tutorial. Datacamp. (2020, October 19). Retrieved October 12, 2022, from https://michaelgastner.com/R_for_QR/extracting-values-from-data-frames.html 
+
+RDocumentation. (n.d.). Arrange: Arrange rows by variables. RDocumentation. Retrieved October 12, 2022, from https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/arrange 
+
+Ebner, J. (2018, August 8). How to use mutate in R. Sharp Sight. Retrieved October 12, 2022, from https://www.sharpsightlabs.com/blog/mutate-in-r/ 
+
+Kabacoff , R. (n.d.). Graphical parameters. Quick-R by datacamp. Retrieved October 12, 2022, from https://www.statmethods.net/advgraphs/parameters.html 
+
+Kabacoff, R. (n.d.). Axes and text. Quick-R by datacamp. Retrieved October 12, 2022, from https://www.statmethods.net/advgraphs/axes.html 
+
+Kabacoff, R. (n.d.). Bar plots. Quick-R by datacamp. Retrieved October 12, 2022, from https://www.statmethods.net/graphs/bar.html 
+
+LordPuggo, &amp; Phil. (2022, May 12). Geom_text how to display no decimals when rounded to nearest thousands using scale=1e-3. Stack Overflow. Retrieved October 12, 2022, from https://stackoverflow.com/questions/72209514/geom-text-how-to-display-no-decimals-when-rounded-to-nearest-thousands-using-sca 
+
+
+
+
+#Appendix
+
+#install.packages("FSA")
+#install.packages("FSAdata")
+#install.packages("magrittr")
+#install.packages("dplyr")
+#install.packages("tidyr")
+#install.packages("plyr")
+#install.packages("tidyverse")
+#install.packages("plotrix")
+#install.packages("moments")
+#install.packages("ggplot2")
+library(FSA)
+library(FSAdata)
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(plotrix)
+library(moments)
+library(ggplot2)
+
+
+bio <- read.csv("inchBio.csv")
+bio
+
+head(bio)
+tail(bio)
+str(bio)
+
+counts <- c(bio$species)
+
+unique(bio$species)
+
+tmp <- table(bio$species)
+tmp
+
+tmp2 <- subset(bio, select = species)
+head(tmp2, 5)
+
+w <- table(bio$species)
+w
+class(w)
+
+t <- as.data.frame(w)
+t
+
+t$Freq
+
+cSpec <- table(bio$species)
+cSpec
+
+cSpecPct <- table(bio$species)/676
+cSpecPct
+
+u <- as.data.frame(cSpecPct)
+u
+
+barplot(cSpec, ylab = "COUNTS", col = "Light Green", main = "Fish Count", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+
+barplot(cSpecPct, ylim = c(0.0, 0.4), ylab = "Frequency %", col = "Light Blue", main = "Fish Relative Frequency", cex.names = 0.6, cex.axis = 0.6, cex.lab = 1.2, las = 2)
+
+d <- arrange(u, desc(Freq))
+d
+
+names(d) <- c("Species", "RelFreq")
+d
+
+d <- mutate(d, cumfreq = cumsum(RelFreq), counts = RelFreq*676, cumcounts = cumsum(counts))
+d
+
+def_par <- par(mar=c(5, 3, 2, 5))
+def_par
+
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+lines(pc , d$cumcounts, type = "b", cex = 0.7, pch = 19, col = "cyan4")
+
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+box(col = "grey62")
+
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+axis(side = 2, at = c(0, d$cumcounts), tick = TRUE, col.ticks = "grey62", col.axis = "grey62", cex.axis = 0.8, las = 2)
+
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto", las = 2)
+axis(side = 4, at = c(0, d$cumcounts), labels = paste0(round( c(0,d$cumfreq),digits = 0), "%"), col = "cyan4", cex.axis = 0.8, las = 2, tick = TRUE, col.axis = "cyan4")
+
+
+pc <- barplot(d$counts, width = 1, space = 0.15, border = NA, axes = F, ylim = c(0,3.05*max(d$counts, na.rm = TRUE)), ylab = "Cummulative Counts", cex.names = 0.7, names.arg = d$Species, main = "Species Pareto by ANOH", las = 2)
+lines(pc , d$cumcounts, type = "b", cex = 0.7, pch = 19, col = "cyan4")
+box(col = "grey62")
+axis(side = 2, at = c(0, d$cumcounts), tick = TRUE, col.ticks = "grey62", col.axis = "grey62", cex.axis = 0.8, las = 2)
+axis(side = 4, at = c(0, d$cumcounts), labels = paste0(round( c(0,d$cumfreq),digits = 0), "%"), col = "cyan4", cex.axis = 0.8, las = 2, tick = TRUE, col.axis = "cyan4")
+
+
